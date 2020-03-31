@@ -812,17 +812,15 @@ class CE_RUNS:
         self.runtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
         return runpath
 
-    def brombreg_run(self, apa_oft_info, sgs = [1,3], tps =[0,1,2,3], cycle=150): 
-        run_code, val, runpath = self.save_setting(run_code="8", val=100) 
-        for bbwib_pos in range(len(self.bbwib_ips)):
-            wib_ip = self.bbwib_ips[bbwib_pos]
-            print "WIB%d (IP=%s)"%((bbwib_pos+1), wib_ip)
-            for wib_addr in range(len(self.wib_ips)):
-                if (wib_ip == self.wib_ips[wib_addr]):
-                    break
-            wib_pos = wib_addr
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = True)
 
+    def soft_triger_run(self, apa_oft_info, sgs = [1,3], tps =[0,1,2,3], triger_no=1): 
+        run_code, val, runpath = self.save_setting(run_code="8", val=100) 
+        for wib_addr in range(len(self.wib_ips)):
+            wib_ip = self.wib_ips[wib_addr]
+            wib_pos = wib_addr
+            print "WIB%d (IP=%s)"%((wib_pos+1), wib_ip)
+            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = True)
+ 
 #            self.femb_meas.femb_config.femb.write_reg_wib_checked (40, 1)
 #            self.femb_meas.femb_config.femb.write_reg_wib_checked (41, 6400)
 
@@ -843,8 +841,9 @@ class CE_RUNS:
             for sg in sgs:
                 for tp in tps:
                     step = "WIB" + format(wib_pos, '02d') + "step" + str(sg) + run_code
-                    self.femb_meas.wib_brombreg_acq(runpath, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
-                                     fpga_dac=0, asic_dac=0, slk0 = self.slk0, slk1= self.slk1, cycle=cycle)
+                    self.femb_meas.soft_triger_acq(runpath, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
+                                     fpga_dac=0, asic_dac=0, slk0 = self.slk0, slk1= self.slk1,
+                                                   triger_no=triger_no)
 
             #self.femb_meas.femb_config.femb.write_reg_wib_checked (40, 0)
             #self.femb_meas.femb_config.femb.write_reg_wib_checked (41, 0)

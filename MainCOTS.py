@@ -213,6 +213,17 @@ if (test_runs&0x04 != 0x0 ):
         f.write (ceruns.runtime + "\n" )
         f.write ("Alive FEMBs: " + str(ceruns.alive_fembs) + "\n" )
 
+if (test_runs&0x20 != 0x0 ):
+    print "Software Trigger mode"
+    print "time cost = %.3f seconds"%(timer()-start)
+    chk_path = ceruns.qc_run(apa_oft_info, sgs=[1], tps =[3], val = 100) 
+    with open(logfile, "a+") as f:
+        f.write( "%2X: Quick Checkout Test\n" %(test_runs&0x10) ) 
+        f.write (ceruns.runpath + "\n" )
+        f.write (ceruns.runtime + "\n" )
+        f.write ("Alive FEMBs: " + str(ceruns.alive_fembs) + "\n" )
+
+
 if (test_runs&0x80 != 0x0 ):
     print "Turn FEMBs OFF"
     print "time cost = %.3f seconds"%(timer()-start)

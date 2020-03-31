@@ -365,23 +365,23 @@ class FEMB_UDP:
                 socket.htons(dataValLSB),socket.htons( self.FOOTER  ), 0x0, 0x0, 0x0  )
         return WRITE_MESSAGE
 
-    def select_femb_asic_bromberg(self, sock_write, femb = 0, asic = 0 ):
-        #write wib
-        wib_femb_cs = self.reg_data_gen(reg=7,data=0x80000000)
-        self.write_reg_send(sock_write, wib_femb_cs, wib=True) #
-        #write femb 
-        asic_cs = asic & 0x0F
-        asic_cs = self.reg_data_gen(reg=7,data=asic_cs)
-        self.write_reg_send(sock_write, asic_cs, wib=False, femb=femb) #
-        #write femb 
-        hs = self.reg_data_gen(reg=17,data=1)
-        self.write_reg_send(sock_write, hs, wib=False, femb=femb) #
-        #write wib
-        wib_asic =  ( ((femb << 16)&0x000F0000) + ((asic << 8) &0xFF00) ) 
-        wib_femb_cs = self.reg_data_gen(reg=7,data= wib_asic | 0x80000000)
-        self.write_reg_send(sock_write, wib_femb_cs, wib=True) #
-        wib_femb_cs = self.reg_data_gen(reg=7,data= wib_asic )
-        self.write_reg_send(sock_write, wib_femb_cs, wib=True) #
+#    def select_femb_asic_bromberg(self, sock_write, femb = 0, asic = 0 ):
+#        #write wib
+#        wib_femb_cs = self.reg_data_gen(reg=7,data=0x80000000)
+#        self.write_reg_send(sock_write, wib_femb_cs, wib=True) #
+#        #write femb 
+#        asic_cs = asic & 0x0F
+#        asic_cs = self.reg_data_gen(reg=7,data=asic_cs)
+#        self.write_reg_send(sock_write, asic_cs, wib=False, femb=femb) #
+#        #write femb 
+#        hs = self.reg_data_gen(reg=17,data=1)
+#        self.write_reg_send(sock_write, hs, wib=False, femb=femb) #
+#        #write wib
+#        wib_asic =  ( ((femb << 16)&0x000F0000) + ((asic << 8) &0xFF00) ) 
+#        wib_femb_cs = self.reg_data_gen(reg=7,data= wib_asic | 0x80000000)
+#        self.write_reg_send(sock_write, wib_femb_cs, wib=True) #
+#        wib_femb_cs = self.reg_data_gen(reg=7,data= wib_asic )
+#        self.write_reg_send(sock_write, wib_femb_cs, wib=True) #
 
     def write_reg_init(self ):
         sock_write = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
@@ -391,18 +391,18 @@ class FEMB_UDP:
     def write_reg_close(self, sock_write):
         sock_write.close()
 
-    def get_rawdata_packets_bromberg(self, path, step, fe_cfg_r, fembs_np = [0,1,2,3], cycle=100):
+    def get_rawdata_packets_soft_triger(self, path, step, fe_cfg_r, fembs_np = [0,1,2,3], triger_no=1):
+        cycle = 1
         numVal = int(cycle)
         if (numVal < 0) :
             print "FEMB_UDP--> Error record_hs_data: Invalid number of data packets requested"
             return None
 
-        buf_size = self.reg_data_gen(reg=16,data=0x7F00)
+        buf_size = self.reg_data_gen(reg=16,data=0x3F01)
         nor_mode = self.reg_data_gen(reg=15,data=0)
-        fifo_clr_mode = self.reg_data_gen(reg=15,data=3)
         acq_mode = self.reg_data_gen(reg=15,data=1)
-        stopacq_mode = self.reg_data_gen(reg=15,data=2)
-        read_mode = self.reg_data_gen(reg=15,data=0x12)
+        triger_mode = self.reg_data_gen(reg=15,data=3)
+        acq_mode = self.reg_data_gen(reg=15,data=1)
 
         #set up listening socket
         sock_data = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
@@ -413,50 +413,39 @@ class FEMB_UDP:
         sock_write = self.write_reg_init()
         self.write_reg_send(sock_write, buf_size, wib=True) #set buffer size
 
+        print "Read cycle = %d "%triger_no
+        empty_udp = False
+        while ( empty_udp != True ):
+            try:
+                data = sock_data.recv(8192)
+            except socket.timeout:
+                self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
+                #print "Empty UDP buffer"
+                empty_udp = True 
+                break
 
-        for read_no in range(0,numVal,1):
-            print "Read cycle = %d "%read_no
-            self.write_reg_send(sock_write, nor_mode, wib=True) #
-            time.sleep(0.001)
-            self.write_reg_send(sock_write, fifo_clr_mode, wib=True) #
+        self.write_reg_send(sock_write, acq_mode, wib=True) #
+        self.write_reg_send(sock_write, triger_mode, wib=True) #
 
-            empty_udp = False
-            while ( empty_udp != True ):
+        for femb in fembs_np:
+            rawdataPackets = [] 
+            filename = path + "/" + step +"_FEMB" + str(femb) + "CHIP" + str(asic) + "_" + format(fe_cfg_r,'02X') + "_" + format(triger_no,'04d') + ".bin"
+            for packet in range(0,1000,1):
+                data = None
+                timeout_flg = False
                 try:
                     data = sock_data.recv(8192)
                 except socket.timeout:
                     self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
-                    #print "Empty UDP buffer"
-                    empty_udp = True 
+                    timeout_flg = True
+                if data != None :
+                    rawdataPackets.append(data)
+                if (timeout_flg):
                     break
-
-            self.write_reg_send(sock_write, acq_mode, wib=True) #
-            time.sleep(0.01) #10ms
-            self.write_reg_send(sock_write, stopacq_mode, wib=True) #
-
-            for femb in fembs_np:
-                for asic in range(0,8,2):
-                    self.select_femb_asic_bromberg(sock_write, femb, asic )
-                    rawdataPackets = [] 
-                    filename = path + "/" + step +"_FEMB" + str(femb) + "CHIP" + str(asic) + "_" + format(fe_cfg_r,'02X') + "_" + format(read_no,'04d') + ".bin"
-
-                    self.write_reg_send(sock_write, read_mode, wib=True) #
-                    for packet in range(0,1000,1):
-                        data = None
-                        timeout_flg = False
-                        try:
-                            data = sock_data.recv(8192)
-                        except socket.timeout:
-                            self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
-                            timeout_flg = True
-                        if data != None :
-                            rawdataPackets.append(data)
-                        if (timeout_flg):
-                            break
         
-                    rawdata_str = ''.join(rawdataPackets)
-                    with open(filename,"wb") as f:
-                        f.write(rawdata_str) 
+            rawdata_str = ''.join(rawdataPackets)
+            with open(filename,"wb") as f:
+                f.write(rawdata_str) 
 
         self.write_reg_send(sock_write, nor_mode, wib=True) #
         time.sleep(0.1)
@@ -470,7 +459,7 @@ class FEMB_UDP:
                 print "Can't return to normal mode"
                 sys.exit()
             if data!= None: 
-                print "Brombreg mode is DONE, return to normal mode sucessfully"
+                print "Triger mode is DONE, return to normal mode sucessfully"
                 empty_udp = True 
                 break
 

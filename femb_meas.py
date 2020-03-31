@@ -651,11 +651,11 @@ class FEMB_MEAS: #for one FEMB
                                 f.write(rawdata)
 
     #brombreg mode read one WIB, not one FEMB
-    def wib_brombreg_acq(self, path, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
-                      fpga_dac=0, asic_dac=0, slk0 = 0, slk1= 0, cycle=150):
+    def soft_triger_acq(self, path, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
+                      fpga_dac=0, asic_dac=0, slk0 = 0, slk1= 0, triger_no=150):
         savepath = self.wib_savepath (path, step)
         fembs_np = femb_on_wib #[0,1,2,3]
-        print "Brombreg starts, please wait"
+        print "Sort trigger starts, please wait"
 
         if (not(self.jumbo_flag)):
             self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1FB)
@@ -699,7 +699,8 @@ class FEMB_MEAS: #for one FEMB
 
             fe_cfg = int((fe_adc_regs[5])&0xFF)
             fe_cfg_r = int('{:08b}'.format(fe_cfg)[::-1], 2)
-        self.femb_config.femb.get_rawdata_packets_bromberg(path=path, step=step, fe_cfg_r=fe_cfg_r, fembs_np=fembs_np , cycle=cycle)
+        self.femb_config.femb.get_rawdata_packets_soft_triger(path=path, step=step,
+                                                              fe_cfg_r=fe_cfg_r, fembs_np=fembs_np , triger_no=triger_no)
 
     #for one WIB operation
     def wib_monitor(self, runpath, temp_or_pluse = "pulse" ):
@@ -799,55 +800,6 @@ class FEMB_MEAS: #for one FEMB
             f.write("\n") 
             f.write("\n") 
         return None
-
-    def avg_chkout(self, path, step, femb_addr, sg=2, tp=1, clk_cs=1, pls_cs = 1, dac_sel=1, \
-                    fpga_dac=1, asic_dac=0, slk0 = 0, slk1= 0, val=1600):
-        print "FEMB_DAQ-->Avergae Check out"
-        savepath = self.wib_savepath (path, step)
-        file_setadc_rec = savepath + step +"_FEMB" + str(femb_addr)+ str(sg) + str(tp) + "Avg_FE_ADC.txt"
-        if os.path.isfile(file_setadc_rec):
-            print "%s, file exist!!!"%file_setadc_rec
-            sys.exit()
-        else:
-            self.fe_reg.set_fe_board() # reset the registers value
-            self.fe_reg.set_fe_board(sg=sg, st=tp, sts=1, smn=0, sdf=1, slk0=slk0, slk1=slk1, swdac =2, dac=0 )
-            fe_regs = copy.deepcopy(self.fe_reg.REGS)
-            self.adc_reg.set_adc_board(clk0=1,f0 =0) #external clk
-            adc_regs = copy.deepcopy(self.adc_reg.REGS)
-            yuv_bias_regs = self.yuv_bias_set(femb_addr)
-            fe_bias_regs = self.fe_regs_bias_config(fe_regs, yuv_bias_regs ) #one FEMB
-            self.fe_adc_reg.set_board(fe_bias_regs,adc_regs)
-            fe_adc_regs = copy.deepcopy(self.fe_adc_reg.REGS)
-
-            if sg == 3: #25mV/fC
-                self.ampl = 4
-            elif sg == 1: #"14_0mV_"
-                self.ampl = 8
-            elif sg == 2: #"07_8mV_":
-                self.ampl = 12
-            elif sg == 0: #"04_7mV_":
-                self.ampl = 20
-            else:
-                self.ampl = 4
-            self.dly  = 10
-            self.reg_5_value = (self.reg_5_value&0xFFFFFF00) + (self.ampl&0xFF)
-            self.reg_5_value = (self.reg_5_value&0xFFFF00FF) + ((self.dly<<8)&0xFF00)
-            self.femb_config.femb.write_reg_femb_checked (femb_addr, 5, self.reg_5_value)
-            self.femb_config.config_femb(femb_addr, fe_adc_regs ,clk_cs, pls_cs, dac_sel, fpga_dac, asic_dac)
-            self.femb_config.config_femb_mode(femb_addr,  pls_cs, dac_sel, fpga_dac, asic_dac)
-
-            self.recfile_save(file_setadc_rec, step, femb_addr, fe_adc_regs) 
-
-            for chip in range(8):
-                rawdata = ""
-                fe_cfg = int((fe_adc_regs[5])&0xFF)
-                fe_cfg_r = int('{:08b}'.format(fe_cfg)[::-1], 2)
-                filename = savepath + step +"_FEMB" + str(femb_addr) + "CHIP" + str(chip) + "_" + format(fe_cfg_r,'02X') + "_FPGADAC" + str(self.ampl) + ".bin"
-                print filename
-                rawdata = self.femb_config.get_rawdata_packets_femb(femb_addr, chip, val)
-                if rawdata != None:
-                    with open(filename,"wb") as f:
-                        f.write(rawdata) 
 
     def __init__(self):
         self.freq = 500
