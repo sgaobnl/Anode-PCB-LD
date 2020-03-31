@@ -420,7 +420,7 @@ class FEMB_UDP:
                 data = sock_data.recv(8192)
             except socket.timeout:
                 self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
-                #print "Empty UDP buffer"
+                print "Empty UDP buffer"
                 empty_udp = True 
                 break
                 
@@ -448,6 +448,90 @@ class FEMB_UDP:
             rawdata_str = ''.join(rawdataPackets)
             with open(filename,"wb") as f:
                 f.write(rawdata_str) 
+
+        self.write_reg_send(sock_write, nor_mode, wib=True) #
+        time.sleep(0.1)
+        empty_udp = False
+        data = None
+        while ( empty_udp != True ):
+            try:
+                data = sock_data.recv(8192)
+            except socket.timeout:
+                self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
+                print "Can't return to normal mode"
+                sys.exit()
+            if data!= None: 
+                print "Triger mode is DONE, return to normal mode sucessfully"
+                empty_udp = True 
+                break
+
+        sock_data.close()
+        self.write_reg_close(sock_write)
+
+
+    def get_rawdata_packets_hw_triger(self, path, step, fe_cfg_r, fembs_np = [0,1,2,3]):
+        cycle = 1
+        numVal = int(cycle)
+        if (numVal < 0) :
+            print "FEMB_UDP--> Error record_hs_data: Invalid number of data packets requested"
+            return None
+
+        buf_size = self.reg_data_gen(reg=16,data=0x3F000000)
+        nor_mode = self.reg_data_gen(reg=15,data=0)
+        hw_trig_mode = self.reg_data_gen(reg=15,data=0x80000101)
+
+        #set up listening socket
+        sock_data = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
+        sock_data.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock_data.bind(('',self.UDP_PORT_HSDATA))
+        sock_data.settimeout(5)
+
+        sock_write = self.write_reg_init()
+        self.write_reg_send(sock_write, buf_size, wib=True) #set buffer size
+        
+        self.write_reg_send(sock_write, acq_mode, wib=True) # wait for a trigger
+        empty_udp = False
+        while ( empty_udp != True ):
+            try:
+                data = sock_data.recv(8192)
+            except socket.timeout:
+                self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
+                print "Empty UDP buffer"
+                empty_udp = True 
+                break
+                
+        print ("Hardware trigger is enabled")
+        print ("Please feed trigger signal to 1st LEMO connector on WIB") 
+        print ("You have to stop external tirgger first but you stop the script!!!")
+        tri_rdy = raw_input("Is external trigger ready? (Y/N) >> ")
+        if "Y" in tri_rdy:
+            self.write_reg_send(sock_write, hw_triger_mode, wib=True) #
+            rawdataPackets = [] 
+            tsp = str(int(time.time() * 100 ))
+            filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
+            while ( not stop_flg ):
+                timeout_cnt = 0
+                data = None
+                try:
+                    data = sock_data.recv(8192)
+                except socket.timeout:
+                    print ("UDP timeout, no data is received in the past 5 second")
+                    timeout_cnt = timeout_cnt + 1
+                if data != None :
+                    timeout_cnt = 0
+                    rawdataPackets.append(data)
+                if (timeout_cnt > 20):
+                    print ("No trigger data for 100 seconds, do you want to exit")
+                    if ("Y" in raw_input ("Y/N : ")):
+                        stop_flg = True
+                        break
+                    else:
+                        stop_flg = False
+                        timeout_cnt = 0
+            if (len(rawdataPackets) > 0 ):
+                rawdata_str = ''.join(rawdataPackets)
+                with open(filename,"wb") as f:
+                    f.write(rawdata_str) 
 
         self.write_reg_send(sock_write, nor_mode, wib=True) #
         time.sleep(0.1)

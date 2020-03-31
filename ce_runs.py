@@ -672,14 +672,8 @@ class CE_RUNS:
             print "WIB%d (IP=%s)"%((wib_pos+1), wib_ip)
             self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = True)
  
-#            self.femb_meas.femb_config.femb.write_reg_wib_checked (40, 1)
-#            self.femb_meas.femb_config.femb.write_reg_wib_checked (41, 6400)
-
             self.femb_on_apa ()
             femb_on_wib = self.alive_fembs[wib_pos] 
-            #if (femb_on_wib != [0,1,2,3] ):
-            #    print "Brombreg mode asks for 4 FEMB on the same WIB,  anyway!!"
-                #sys.exit()
 
             adc_oft_regs_np = [[], [], [], []]
             yuv_bias_regs_np = [[], [], [], []]
@@ -695,12 +689,41 @@ class CE_RUNS:
                     self.femb_meas.soft_triger_acq(runpath, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
                                      fpga_dac=0, asic_dac=0, slk0 = self.slk0, slk1= self.slk1)
 
-            #self.femb_meas.femb_config.femb.write_reg_wib_checked (40, 0)
-            #self.femb_meas.femb_config.femb.write_reg_wib_checked (41, 0)
             self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = False)
         self.run_code = run_code
         self.runpath = runpath
         self.runtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+
+    def hw_triger_run(self, apa_oft_info, sgs = [1,3], tps =[0,1,2,3]): 
+        run_code, val, runpath = self.save_setting(run_code="8", val=100) 
+        for wib_addr in range(len(self.wib_ips)):
+            wib_ip = self.wib_ips[wib_addr]
+            wib_pos = wib_addr
+            print "WIB%d (IP=%s)"%((wib_pos+1), wib_ip)
+            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = True)
+ 
+            self.femb_on_apa ()
+            femb_on_wib = self.alive_fembs[wib_pos] 
+
+            adc_oft_regs_np = [[], [], [], []]
+            yuv_bias_regs_np = [[], [], [], []]
+            for femb_addr in femb_on_wib:
+                self.femb_meas.femb_n = wib_addr * 4 + femb_addr
+                adc_oft_regs, yuv_bias_regs = self.femb_oft_bias_regs (apa_oft_info, wib_ip, femb_addr)
+                adc_oft_regs_np[femb_addr] = adc_oft_regs
+                yuv_bias_regs_np[femb_addr] = yuv_bias_regs
+
+            for sg in sgs:
+                for tp in tps:
+                    step = "WIB" + format(wib_pos, '02d') + "step" + str(sg) + run_code
+                    self.femb_meas.hw_triger_acq(runpath, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
+                                     fpga_dac=0, asic_dac=0, slk0 = self.slk0, slk1= self.slk1)
+
+            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = False)
+        self.run_code = run_code
+        self.runpath = runpath
+        self.runtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+
 
     def monitor_run(self, temp_or_pluse = "temp", chn=0): 
         #temp_or_pluse: temp, pulse, banggap

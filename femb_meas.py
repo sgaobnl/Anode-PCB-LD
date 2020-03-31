@@ -683,7 +683,7 @@ class FEMB_MEAS: #for one FEMB
             self.reg_5_value = (self.reg_5_value&0xFFFFFF00) + (self.ampl&0xFF)
             self.dly  = 10
             self.reg_5_value = (self.reg_5_value&0xFFFF00FF) + ((self.dly<<8)&0xFF00)
-            self.freq = 201
+            self.freq = 500
             self.reg_5_value = ((self.freq<<16)&0xFFFF0000) + (self.reg_5_value& 0xFFFF )                
 
             file_setadc_rec = savepath + step +"_FEMB" + str(femb_addr)+ str(sg) + str(tp) + "BB_FE_ADC.txt"
@@ -699,11 +699,64 @@ class FEMB_MEAS: #for one FEMB
 
             fe_cfg = int((fe_adc_regs[5])&0xFF)
             fe_cfg_r = int('{:08b}'.format(fe_cfg)[::-1], 2)
+
         trig_num = int(raw_input ("How many software triggers? (enter 0 exit): "))
         while (trig_num > 0 ):
             for i in range(trig_num):
                 self.femb_config.femb.get_rawdata_packets_soft_triger(path=path, step=step, fe_cfg_r=fe_cfg_r, fembs_np=fembs_np)
             trig_num = int(raw_input ("How many software triggers? (enter 0 exit): "))
+
+    def hw_triger_acq(self, path, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
+                      fpga_dac=0, asic_dac=0, slk0 = 0, slk1= 0):
+        savepath = self.wib_savepath (path, step)
+        fembs_np = femb_on_wib #[0,1,2,3]
+        print "Sort trigger starts, please wait"
+
+        if (not(self.jumbo_flag)):
+            self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1FB)
+        else:
+            self.femb_config.femb.write_reg_wib_checked (0x1F, 0xEFB)
+
+        for femb_addr in fembs_np:
+            self.fe_reg.set_fe_board() # reset the registers value
+            self.fe_reg.set_fe_board(sg=sg, st=tp, sts=0, smn=0, sdf=1, slk0=slk0, slk1=slk1 )
+            fe_regs = copy.deepcopy(self.fe_reg.REGS)
+            adc_regs = self.adc_clk_engr_config (adc_oft_regs_np[femb_addr], clk_cs = clk_cs, adc_en_gr = 1, adc_offset = 0 )
+            fe_bias_regs = self.fe_regs_bias_config(fe_regs, yuv_bias_regs_np[femb_addr] ) #one FEMB
+            self.fe_adc_reg.set_board(fe_bias_regs, adc_regs)
+
+            if sg == "25_0mV_":
+                self.ampl = 4
+            elif sg == "14_0mV_":
+                self.ampl = 8
+            elif sg == "07_8mV_":
+                self.ampl = 12
+            elif sg == "04_7mV_":
+                self.ampl = 20
+            else:
+                self.ampl = 4
+            self.reg_5_value = (self.reg_5_value&0xFFFFFF00) + (self.ampl&0xFF)
+            self.dly  = 10
+            self.reg_5_value = (self.reg_5_value&0xFFFF00FF) + ((self.dly<<8)&0xFF00)
+            self.freq = 500
+            self.reg_5_value = ((self.freq<<16)&0xFFFF0000) + (self.reg_5_value& 0xFFFF )                
+
+            file_setadc_rec = savepath + step +"_FEMB" + str(femb_addr)+ str(sg) + str(tp) + "BB_FE_ADC.txt"
+            if os.path.isfile(file_setadc_rec):
+                print "%s, file exist!!!"%file_setadc_rec
+                sys.exit()
+            else:
+                self.femb_config.femb.write_reg_femb_checked (femb_addr, 5, self.reg_5_value)
+                fe_adc_regs = self.fe_adc_reg.REGS
+                self.femb_config.config_femb(femb_addr, fe_adc_regs, clk_cs, pls_cs, dac_sel, fpga_dac, asic_dac)
+
+            self.recfile_save(file_setadc_rec, step, femb_addr, fe_adc_regs) 
+
+            fe_cfg = int((fe_adc_regs[5])&0xFF)
+            fe_cfg_r = int('{:08b}'.format(fe_cfg)[::-1], 2)
+
+        self.femb_config.femb.get_rawdata_packets_hw_triger(path=path, step=step, fe_cfg_r=fe_cfg_r, fembs_np=fembs_np)
+
 
     #for one WIB operation
     def wib_monitor(self, runpath, temp_or_pluse = "pulse" ):
