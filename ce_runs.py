@@ -24,7 +24,6 @@ import numpy as np
 import time
 import pickle
 from femb_meas import FEMB_MEAS
-from PD_CHKOUT import PD_CHKOUT
 
 ###############################################################################
 class CE_RUNS:
@@ -668,7 +667,6 @@ class CE_RUNS:
         self.runpath = runpath
         self.runtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
 
-
     def mbb_run(self, mbb=0 ): 
         mbb_en = (mbb & 0x100)>>8
         mbb_cal = (mbb & 0x1)>>0
@@ -873,38 +871,6 @@ class CE_RUNS:
                 sys.exit()
             self.femb_meas.wib_monitor(runpath, temp_or_pluse = temp_or_pluse, chn=chn )
             self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = False)
-        self.run_code = run_code
-        self.runpath = runpath
-        self.runtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-
-    def avg_run(self, val = 1600, avg_cycle=300): 
-
-        run_code, val, runpath = self.save_setting(run_code="A", val=val) 
-        resultpaths = []
-        for wib_pos in range(len(self.wib_ips)):
-            wib_ip = self.wib_ips[wib_pos]
-            print "WIB (IP=%s)"%(wib_ip)
-            for wib_addr in range(len(self.wib_ips)):
-                if (wib_ip == self.wib_ips[wib_addr]):
-                    break
-            wib_pos = wib_addr
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = True)
-            self.femb_on_apa ()
-            femb_on_wib = self.alive_fembs[wib_pos] 
-            for femb_addr in femb_on_wib:
-                self.femb_meas.femb_n = wib_addr * 4 + femb_addr
-                sg=2
-                tp=1
-                step = self.ceboxes[femb_addr] + "WIB" + format(wib_pos, '02d') +  "step" + str(sg) + run_code
-                datapath= self.femb_meas.avg_chkout(runpath, step, femb_addr, sg=sg, tp=tp, clk_cs=1, pls_cs = 1, dac_sel=1, \
-                                          fpga_dac=1, asic_dac=0, slk0 = self.slk0, slk1= self.slk1, val=val)
-                
-                PD_CHKOUT (datapath, step, plot_en=0x3F,  avg_cycle=avg_cycle, jumbo_flag=self.jumbo_flag )
-                resultpaths.append(datapath)
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = False)
-        print "Please check the pdf format files in the folder below: "
-        for onepath in resultpaths:
-            print onepath
         self.run_code = run_code
         self.runpath = runpath
         self.runtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 

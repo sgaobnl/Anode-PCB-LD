@@ -55,15 +55,6 @@ if (ceruns.APA == "SBND_TOP"):
     ceruns.COTSADC = True
     ceruns.femb_meas.femb_config.phase_set = phase_set
 
-elif (ceruns.APA == "CHKOUT"): 
-    print (ceruns.APA)
-    ceruns.path = "I:/SBND_Production/Rawdata/" 
-    ceruns.wib_ips = [ "192.168.121.1" ]
-    ceruns.avg_wib_ips = ["192.168.121.1"] 
-    ceruns.avg_wib_pwr_femb = [[1,1,1,0]]
-    ceruns.avg_femb_on_wib = [0] 
-    ceruns.jumbo_flag = True
-
 ceruns.jumbo_flag_set( )
 if (os.path.exists(ceruns.path)):
     pass
@@ -82,7 +73,6 @@ rms_path = "Void"
 fpg_path = "Void"
 asic_path = "Void"
 
-#if (test_runs != 0x100 ):
 if (True ):
     print ("WIEC self check")
     print ("time cost = %.3f seconds"%(timer()-start))
@@ -170,7 +160,6 @@ if (test_runs&0x7F != 0x0 ):
     print ("time cost = %.3f seconds"%(timer()-start))
 
     if (test_runs&0x7F == 0x40):
-#    if (True):
         #oft_file = "./APA_ADC_OFT_06202018_121405.bin"
         oft_file = "./APA_ADC_OFT_06272018_222333.bin"
         with open (oft_file, 'rb') as fp:
@@ -223,24 +212,6 @@ if (test_runs&0x04 != 0x0 ):
         f.write (ceruns.runpath + "\n" )
         f.write (ceruns.runtime + "\n" )
         f.write ("Alive FEMBs: " + str(ceruns.alive_fembs) + "\n" )
-
-if (test_runs&0x100 != 0x0 ):
-    run_cnt = int(sys.argv[5])
-    for i in range(run_cnt):
-        if i > 0:
-            t_sleep = int(sys.argv[6])
-            t_min = t_sleep/60
-            runtime =  datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-            print "sleep %d minutes starting from %s"%(t_min,runtime)
-            print "Ctrl-C to if you want to stop the script before it finishes"
-            time.sleep(t_sleep)
-        print "WIB status check start"
-        print  datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        ceruns.WIB_LINK_CUR()
-        with open(monlogfile, "a+") as f:
-            for onelinkcur in ceruns.linkcurs:
-                f.write( onelinkcur + "\n") 
-        print "Done!"
 
 if (test_runs&0x80 != 0x0 ):
     print "Turn FEMBs OFF"

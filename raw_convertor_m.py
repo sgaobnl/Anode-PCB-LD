@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 7/15/2016 11:47:39 AM
-Last modified: Fri Jun  8 14:43:24 2018
+Last modified: 12/7/2018 11:40:06 AM
 """
 
 #defaut setting for scientific caculation
@@ -18,7 +18,7 @@ Last modified: Fri Jun  8 14:43:24 2018
 import numpy as np
 import struct
 
-def raw_convertor_feedloc(raw_data, smps, jumbo_flag = False):
+def raw_convertor_feedloc(raw_data, smps, jumbo_flag = True):
     dataNtuple =struct.unpack_from(">%dH"%(smps*16),raw_data)
     chn_data=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],]
     feed_loc=[]
@@ -112,16 +112,17 @@ def raw_convertor_feedloc(raw_data, smps, jumbo_flag = False):
             else:
                 pass
             i = i + 13 
-
+    if (len(feed_loc) == 0 ):
+        feed_loc = range(0, len(chn_data[0])-1000, 500)
     return chn_data, feed_loc
 
-def raw_convertor(raw_data, smps, jumbo_flag = False):
+def raw_convertor(raw_data, smps, jumbo_flag = True):
     chn_data, feed_loc = raw_convertor_feedloc(raw_data, smps, jumbo_flag)
     return chn_data
 
-def raw_convertor_peak(raw_data, smps, jumbo_flag = False):
+def raw_convertor_peak(raw_data, smps, jumbo_flag = True):
     chn_data, feed_loc = raw_convertor_feedloc(raw_data, smps, jumbo_flag)
-    if ( len(feed_loc)  ) > 2 :
+    if ( len(feed_loc)  ) > 1 :
         chn_peakp=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],]
         chn_peakn=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],]
         for tmp in range(len(feed_loc)-1):
@@ -129,8 +130,13 @@ def raw_convertor_peak(raw_data, smps, jumbo_flag = False):
                 chn_peakp[chn].append ( np.max(chn_data[chn][feed_loc[ tmp]:feed_loc[tmp]+100 ]) )
                 chn_peakn[chn].append ( np.min(chn_data[chn][feed_loc[ tmp]:feed_loc[tmp]+100 ]) )
     else:
-        chn_peakp = None
-        chn_peakn = None
+        chn_peakp=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],]
+        chn_peakn=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],]
+        #for tmp in range(len(feed_loc)-1):
+        for chn in range(16):
+            chn_peakp[chn].append ( np.max(chn_data[chn][0:10000 ]) )
+            chn_peakn[chn].append ( np.min(chn_data[chn][0:10000 ]) )
+
     return  chn_data, feed_loc, chn_peakp, chn_peakn
 
 
