@@ -398,11 +398,11 @@ class FEMB_UDP:
             print "FEMB_UDP--> Error record_hs_data: Invalid number of data packets requested"
             return None
 
-        buf_size = self.reg_data_gen(reg=16,data=0x3F01)
+        buf_size = self.reg_data_gen(reg=16,data=0x3F000000)
         nor_mode = self.reg_data_gen(reg=15,data=0)
-        acq_mode = self.reg_data_gen(reg=15,data=1)
-        triger_mode = self.reg_data_gen(reg=15,data=3)
-        acq_mode = self.reg_data_gen(reg=15,data=1)
+        acq_mode = self.reg_data_gen(reg=15,data=0x80000001)
+        triger_mode = self.reg_data_gen(reg=15,data=0x80000003)
+ #       acq_mode = self.reg_data_gen(reg=15,data=1)
 
         #set up listening socket
         sock_data = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
@@ -412,7 +412,8 @@ class FEMB_UDP:
 
         sock_write = self.write_reg_init()
         self.write_reg_send(sock_write, buf_size, wib=True) #set buffer size
-
+        
+        self.write_reg_send(sock_write, acq_mode, wib=True) # wait for a trigger
         empty_udp = False
         while ( empty_udp != True ):
             try:
@@ -422,14 +423,15 @@ class FEMB_UDP:
                 #print "Empty UDP buffer"
                 empty_udp = True 
                 break
-
+                
         self.write_reg_send(sock_write, acq_mode, wib=True) #
         self.write_reg_send(sock_write, triger_mode, wib=True) #
+        self.write_reg_send(sock_write, acq_mode, wib=True) #
 
         for femb in fembs_np:
             rawdataPackets = [] 
             tsp = str(int(time.time() * 100 ))
-            filename = path + "/" + step +"_FEMB" + str(femb) + "CHIP" + str(asic) + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
+            filename = path + "/" + step +"_FEMB" + str(femb)  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
             for packet in range(0,1000,1):
                 data = None
                 timeout_flg = False

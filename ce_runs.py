@@ -520,21 +520,21 @@ class CE_RUNS:
         elif (run_code == "4" ):
             run_type = "asi"
         elif (run_code == "8" ):
-            run_type = "bbm"
-        elif (run_code == "9" ):
-            run_type = "tmp"
-        elif (run_code == "A" ):
-            run_type = "avg"
+            run_type = "tri"
+        # elif (run_code == "9" ):
+            # run_type = "tmp"
+        # elif (run_code == "A" ):
+            # run_type = "avg"
         elif (run_code == "B" ):
-            run_type = "oft"
-        elif (run_code == "C" ):
-            run_type = "pwr"
-        elif (run_code == "D" ):
-            run_type = "msk"
-        elif (run_code == "E" ):
-            run_type = "cfg"
-        elif (run_code == "F" ):
-            run_type = "dat"
+             run_type = "oft"
+        # elif (run_code == "C" ):
+            # run_type = "pwr"
+        # elif (run_code == "D" ):
+            # run_type = "msk"
+        # elif (run_code == "E" ):
+            # run_type = "cfg"
+        # elif (run_code == "F" ):
+            # run_type = "dat"
         else:
             run_type = "und"
 
@@ -544,7 +544,8 @@ class CE_RUNS:
             run_no = "run" + format(run_cycle,'02d')
             runpath = self.path + "Rawdata_" + runtime + "/" + run_no + run_type + "/"
         try: 
-            os.makedirs(runpath)
+            if (run_type != "und"):
+                os.makedirs(runpath)
         except OSError:
             if os.path.exists(runpath):
                 pass
@@ -726,7 +727,7 @@ class CE_RUNS:
     def __init__(self):
         self.path = "/nfs/rscratch/bnl_ce/shanshan/Rawdata/" 
         self.wib_ips = ["10.73.137.20", "10.73.137.21", "10.73.137.22", "10.73.137.23", "10.73.137.24"]  
-        self.wib_version_id = 0x116
+        self.wib_version_id = 0x121
         self.femb_ver_id = 0x323
         self.wib_pwr_femb = [[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1]]
         self.femb_mask    = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]

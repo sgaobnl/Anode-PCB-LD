@@ -145,27 +145,6 @@ class APA_MAP:
                             ["V07", "120", 8, "08"], ["V06", "121", 8, "09"], ["V05", "122", 8, "10"], ["V04", "123", 8, "11"], 
                             ["V03", "124", 8, "12"], ["V02", "125", 8, "13"], ["V01", "126", 8, "14"], ["V00", "127", 8, "15"] 
                         ]
-
-        All_sort = []
-        X_sort = []
-        V_sort = []
-        U_sort = []
-        for i in range(128):
-            for chn in apa_femb_loc:
-                if int(chn[1][0:3]) == i :
-                    All_sort.append(chn)
-    
-            for chn in apa_femb_loc:
-                if chn[0][0] == "X" and int(chn[0][1:3]) == i :
-                    X_sort.append(chn)
-            for chn in apa_femb_loc:
-                if chn[0][0] == "V" and int(chn[0][1:3]) == i :
-                    V_sort.append(chn)
-    
-            for chn in apa_femb_loc:
-                if chn[0][0] == "U" and int(chn[0][1:3]) == i :
-                    U_sort.append(chn)
-
         elif (self.APA == "Anode_PCB" ): #to be updated, currently it is SBND_TOP FEMB wire mapping
             apa_femb_loc = [ 
                             ["X31", "031", 2, "15"], ["X30", "030", 2, "14"], ["X29", "029", 2, "13"], ["X28", "028", 2, "12"],
@@ -204,6 +183,27 @@ class APA_MAP:
                             ["V07", "120", 8, "08"], ["V06", "121", 8, "09"], ["V05", "122", 8, "10"], ["V04", "123", 8, "11"], 
                             ["V03", "124", 8, "12"], ["V02", "125", 8, "13"], ["V01", "126", 8, "14"], ["V00", "127", 8, "15"] 
                         ]
+        All_sort = []
+        X_sort = []
+        V_sort = []
+        U_sort = []
+        for i in range(128):
+            for chn in apa_femb_loc:
+                if int(chn[1][0:3]) == i :
+                    All_sort.append(chn)
+    
+            for chn in apa_femb_loc:
+                if chn[0][0] == "X" and int(chn[0][1:3]) == i :
+                    X_sort.append(chn)
+            for chn in apa_femb_loc:
+                if chn[0][0] == "V" and int(chn[0][1:3]) == i :
+                    V_sort.append(chn)
+    
+            for chn in apa_femb_loc:
+                if chn[0][0] == "U" and int(chn[0][1:3]) == i :
+                    U_sort.append(chn)
+
+
 
         All_sort = []
         X_sort = []

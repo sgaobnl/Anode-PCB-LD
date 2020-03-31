@@ -38,11 +38,11 @@ test_runs = int(sys.argv[2],16)
 RTD_flg = False
 jumbo_flag = (sys.argv[3] == "True")
 phase_set = int(sys.argv[4])
-if (ceruns.APA == "SBND_TOP"):
+if (ceruns.APA == "Anode_PCB"):
     print (ceruns.APA)
-    ceruns.wib_version_id = 0x120
+    ceruns.wib_version_id = 0x121
     ceruns.femb_ver_id = 0x501
-    ceruns.path = "D:/BO_FEMBs/Rawdata/" 
+    ceruns.path = "C:/Anode_PCB/Rawdata/" 
     ceruns.wib_ips = [  "192.168.121.1"  ]
     ceruns.wib_pwr_femb = [[1,0,0,0],]
     ceruns.femb_mask    = [[0,0,0,0]]
@@ -218,7 +218,7 @@ if (test_runs&0x20 != 0x0 ):
     print "time cost = %.3f seconds"%(timer()-start)
     chk_path = ceruns.soft_triger_run(apa_oft_info, sgs=[1], tps=[3] )
     with open(logfile, "a+") as f:
-        f.write( "%2X: Quick Checkout Test\n" %(test_runs&0x10) ) 
+        f.write( "%2X: Quick Checkout Test\n" %(test_runs&0x20) ) 
         f.write (ceruns.runpath + "\n" )
         f.write (ceruns.runtime + "\n" )
         f.write ("Alive FEMBs: " + str(ceruns.alive_fembs) + "\n" )
