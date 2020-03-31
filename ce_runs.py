@@ -557,157 +557,7 @@ class CE_RUNS:
             val = val        
         return run_code, val, runpath
 
-    def larcfg_run(self, apa_oft_info, sgs = [3], tps =[0,1,2,3], pls_cs=0, dac_sel=1, fpgadac_en=0, asicdac_en=0, vdac = 0, val = 1000, mbb =0, datamode=0): 
-        run_code, val, runpath = self.save_setting(run_code="E", val=val) 
-        self.run_code = run_code
-        mbb_en = (mbb & 0x100)>>8
-        PLL_cfgflg = True
-        for wib_addr in range(len(self.wib_ips)):
-            wib_ip = self.wib_ips[wib_addr]
-            wib_pos = wib_addr
-
-            if (mbb_en ==1):
-                if (PLL_cfgflg):
-                    self.WIB_PLL_cfg( )
-                    PLL_cfgflg = False
  
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = True)
-            self.femb_on_apa ()
-            femb_on_wib = self.alive_fembs[wib_pos] 
-            for femb_addr in femb_on_wib:
-                self.femb_meas.femb_config.femb.write_reg_femb_checked (femb_addr, 42, 0 )
-                self.femb_meas.femb_n = wib_addr * 4 + femb_addr
-                udp_errcnt_pre = self.femb_meas.femb_config.femb.femb_wrerr_cnt
-                adc_oft_regs, yuv_bias_regs = self.femb_oft_bias_regs (apa_oft_info, wib_ip, femb_addr)
-                for sg in sgs:
-                    print "sg = %d"%sg
-                    for tp in tps:
-                        step = "WIB" + format(wib_pos, '02d') + "step" + str(sg) + run_code
-                        self.femb_meas.lar_cfg(runpath, step, femb_addr, sg, tp, adc_oft_regs, yuv_bias_regs, \
-                                               pls_cs = pls_cs, dac_sel=dac_sel, fpga_dac_en=fpgadac_en, \
-                                               asic_dac_en=asicdac_en, dac_val = vdac, slk0 = self.slk0, slk1= self.slk1, val=val, wib_addr=wib_addr)
-#                        #sync nevis daq
-#                        self.femb_meas.femb_config.femb.UDP_IP = wib_ip
-#                        self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-#                        self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-#                        time.sleep(0.1)
-#                        self.femb_meas.femb_config.femb.write_reg_wib (20, 0x02)
-#                        self.femb_meas.femb_config.femb.write_reg_wib (20, 0x02)
-#                        time.sleep(1)
-#                        self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-#                        self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-
-		if datamode == 3:
-                    lar_fembno = (((wib_pos*4 + femb_addr)&0x0F)<<4) + datamode
-                    self.femb_meas.femb_config.femb.write_reg_femb_checked (femb_addr, 42,lar_fembno )
-                udp_errcnt_post = self.femb_meas.femb_config.femb.femb_wrerr_cnt
-                self.udp_err_np.append([wib_ip, wib_pos, femb_addr, udp_errcnt_post, udp_errcnt_pre, self.run_code] )
-
-#            #sync nevis daq
-#            self.femb_meas.femb_config.femb.UDP_IP = wib_ip
-#            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-#            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-#            time.sleep(0.1)
-#            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x02)
-#            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x02)
-#            time.sleep(1)
-#            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-#            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = False)
-
-#        if (mbb_en):
-#            self.mbb_run(mbb)
-
-        for wib_addr in range(len(self.wib_ips)):
-            wib_ip = self.wib_ips[wib_addr]
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = True)
-            wib_pos = wib_addr
-            #sync nevis daq
-            time.sleep(2)
-            self.femb_meas.femb_config.femb.UDP_IP = wib_ip
-            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-            time.sleep(0.1)
-            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x02)
-            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x02)
-            time.sleep(1)
-            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-            self.femb_meas.femb_config.femb.write_reg_wib (20, 0x00)
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = False)
-
-        self.runpath = runpath
-        self.runtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-
-    def larcfg_getdata(self, val=1000 ): 
-        run_code, val, runpath = self.save_setting(run_code="F", val=val) 
-        self.run_code = run_code
-        for wib_addr in range(len(self.wib_ips)):
-            wib_ip = self.wib_ips[wib_addr]
-            wib_pos = wib_addr
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = True)
-            self.femb_on_apa ()
-            femb_on_wib = self.alive_fembs[wib_pos] 
-            for femb_addr in femb_on_wib:
-                udp_errcnt_pre = self.femb_meas.femb_config.femb.femb_wrerr_cnt
-                step = "WIB" + format(wib_pos, '02d') + "step" + "4" + run_code
-                savepath = self.femb_meas.wib_savepath (runpath, step)
-                for chip in range(8):
-                    rawdata = ""
-                    filename = savepath + step +"_FEMB" + str(femb_addr) + "CHIP" + str(chip) + "_"  + "_CFG_DATA"  + ".bin"
-                    print filename
-                    rawdata = self.femb_meas.femb_config.get_rawdata_packets_femb(femb_addr, chip, val)
-                    if rawdata != None:
-                        with open(filename,"wb") as f:
-                            f.write(rawdata) 
-                udp_errcnt_post = self.femb_meas.femb_config.femb.femb_wrerr_cnt
-                self.udp_err_np.append([wib_ip, wib_pos, femb_addr, udp_errcnt_post, udp_errcnt_pre, self.run_code] )
-            self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = False)
-
-        self.runpath = runpath
-        self.runtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-
-    def mbb_run(self, mbb=0 ): 
-        mbb_en = (mbb & 0x100)>>8
-        mbb_cal = (mbb & 0x1)>>0
-        mbb_trst = (mbb & 0x2)>>1
-        mbb_stopdaq = (mbb & 0x4)>>2
-        mbb_startdaq = (mbb & 0x8)>>3
-        mbb_cal_en = (mbb & 0x10)>>4
-        mbb_trst_en = (mbb & 0x20)>>5
-        mbb_stopdaq_en = (mbb & 0x40)>>6
-        mbb_startdaq_en = (mbb & 0x80)>>7
-
-        self.femb_meas.femb_config.femb.UDP_IP = self.mbb_ip
-        mbb_tmp1=0
-        if (mbb_cal == 1):
-            mbb_tmp1 = mbb_tmp1 | 0x01
-        if (mbb_trst == 1):
-            mbb_tmp1 = mbb_tmp1 | 0x02
-        if (mbb_stopdaq == 1):
-            mbb_tmp1 = mbb_tmp1 | 0x04
-        if (mbb_startdaq == 1):
-            mbb_tmp1 = mbb_tmp1 | 0x08
-
-        self.femb_meas.femb_config.femb.write_reg_wib_checked (1, mbb_tmp1)
-        self.femb_meas.femb_config.femb.write_reg_wib_checked (1, 0)
-
-        mbb_tmp2 = 0
-        if (mbb_cal_en == 1):
-            mbb_tmp2 = mbb_tmp2 | 0x01
-        if (mbb_trst_en == 1):
-            mbb_tmp2 = mbb_tmp2 | 0x02
-        if (mbb_stopdaq_en == 1):
-            mbb_tmp2 = mbb_tmp2 | 0x04
-        if (mbb_startdaq_en == 1):
-            mbb_tmp2 = mbb_tmp2 | 0x08
-
-        self.femb_meas.femb_config.femb.write_reg_wib_checked (1, mbb_tmp2)
-        self.femb_meas.femb_config.femb.write_reg_wib_checked (1, 0)
-
-        time.sleep(1)
-
-
     def qc_run(self, apa_oft_info, sgs = [3], tps =[0,1,2,3], val = 100): 
         run_code, val, runpath = self.save_setting(run_code="0", val=val) 
         self.run_code = run_code
@@ -813,7 +663,7 @@ class CE_RUNS:
         return runpath
 
 
-    def soft_triger_run(self, apa_oft_info, sgs = [1,3], tps =[0,1,2,3], triger_no=1): 
+    def soft_triger_run(self, apa_oft_info, sgs = [1,3], tps =[0,1,2,3]): 
         run_code, val, runpath = self.save_setting(run_code="8", val=100) 
         for wib_addr in range(len(self.wib_ips)):
             wib_ip = self.wib_ips[wib_addr]
@@ -842,8 +692,7 @@ class CE_RUNS:
                 for tp in tps:
                     step = "WIB" + format(wib_pos, '02d') + "step" + str(sg) + run_code
                     self.femb_meas.soft_triger_acq(runpath, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
-                                     fpga_dac=0, asic_dac=0, slk0 = self.slk0, slk1= self.slk1,
-                                                   triger_no=triger_no)
+                                     fpga_dac=0, asic_dac=0, slk0 = self.slk0, slk1= self.slk1)
 
             #self.femb_meas.femb_config.femb.write_reg_wib_checked (40, 0)
             #self.femb_meas.femb_config.femb.write_reg_wib_checked (41, 0)

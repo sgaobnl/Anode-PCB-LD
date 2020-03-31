@@ -391,7 +391,7 @@ class FEMB_UDP:
     def write_reg_close(self, sock_write):
         sock_write.close()
 
-    def get_rawdata_packets_soft_triger(self, path, step, fe_cfg_r, fembs_np = [0,1,2,3], triger_no=1):
+    def get_rawdata_packets_soft_triger(self, path, step, fe_cfg_r, fembs_np = [0,1,2,3]):
         cycle = 1
         numVal = int(cycle)
         if (numVal < 0) :
@@ -413,7 +413,6 @@ class FEMB_UDP:
         sock_write = self.write_reg_init()
         self.write_reg_send(sock_write, buf_size, wib=True) #set buffer size
 
-        print "Read cycle = %d "%triger_no
         empty_udp = False
         while ( empty_udp != True ):
             try:
@@ -429,7 +428,8 @@ class FEMB_UDP:
 
         for femb in fembs_np:
             rawdataPackets = [] 
-            filename = path + "/" + step +"_FEMB" + str(femb) + "CHIP" + str(asic) + "_" + format(fe_cfg_r,'02X') + "_" + format(triger_no,'04d') + ".bin"
+            tsp = str(int(time.time() * 100 ))
+            filename = path + "/" + step +"_FEMB" + str(femb) + "CHIP" + str(asic) + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
             for packet in range(0,1000,1):
                 data = None
                 timeout_flg = False

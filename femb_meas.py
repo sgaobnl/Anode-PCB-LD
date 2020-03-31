@@ -652,7 +652,7 @@ class FEMB_MEAS: #for one FEMB
 
     #brombreg mode read one WIB, not one FEMB
     def soft_triger_acq(self, path, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
-                      fpga_dac=0, asic_dac=0, slk0 = 0, slk1= 0, triger_no=150):
+                      fpga_dac=0, asic_dac=0, slk0 = 0, slk1= 0):
         savepath = self.wib_savepath (path, step)
         fembs_np = femb_on_wib #[0,1,2,3]
         print "Sort trigger starts, please wait"
@@ -699,8 +699,11 @@ class FEMB_MEAS: #for one FEMB
 
             fe_cfg = int((fe_adc_regs[5])&0xFF)
             fe_cfg_r = int('{:08b}'.format(fe_cfg)[::-1], 2)
-        self.femb_config.femb.get_rawdata_packets_soft_triger(path=path, step=step,
-                                                              fe_cfg_r=fe_cfg_r, fembs_np=fembs_np , triger_no=triger_no)
+        trig_num = int(raw_input ("How many software triggers? (enter 0 exit): "))
+        while (trig_num > 0 ):
+            for i in range(trig_num):
+                self.femb_config.femb.get_rawdata_packets_soft_triger(path=path, step=step, fe_cfg_r=fe_cfg_r, fembs_np=fembs_np)
+            trig_num = int(raw_input ("How many software triggers? (enter 0 exit): "))
 
     #for one WIB operation
     def wib_monitor(self, runpath, temp_or_pluse = "pulse" ):
