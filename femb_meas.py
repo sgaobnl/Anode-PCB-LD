@@ -700,6 +700,8 @@ class FEMB_MEAS: #for one FEMB
             fe_cfg = int((fe_adc_regs[5])&0xFF)
             fe_cfg_r = int('{:08b}'.format(fe_cfg)[::-1], 2)
 
+        self.femb_config.femb.write_reg_femb_checked (0, 42, 3) #channel mapping mode
+
         trig_num = int(raw_input ("How many software triggers? (enter 0 exit): "))
         while (trig_num > 0 ):
             for i in range(trig_num):
