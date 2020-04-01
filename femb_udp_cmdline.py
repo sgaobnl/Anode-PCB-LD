@@ -478,6 +478,7 @@ class FEMB_UDP:
 
         buf_size = self.reg_data_gen(reg=16,data=0x3F000000)
         nor_mode = self.reg_data_gen(reg=15,data=0)
+        acq_mode = self.reg_data_gen(reg=15,data=0x80000001)
         hw_trig_mode = self.reg_data_gen(reg=15,data=0x80000101)
 
         #set up listening socket
@@ -505,10 +506,11 @@ class FEMB_UDP:
         print ("You have to stop external tirgger first but you stop the script!!!")
         tri_rdy = raw_input("Is external trigger ready? (Y/N) >> ")
         if "Y" in tri_rdy:
-            self.write_reg_send(sock_write, hw_triger_mode, wib=True) #
+            self.write_reg_send(sock_write, hw_trig_mode, wib=True) #
             rawdataPackets = [] 
             tsp = str(int(time.time() * 100 ))
             filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
+            stop_flg = False
             while ( not stop_flg ):
                 timeout_cnt = 0
                 data = None

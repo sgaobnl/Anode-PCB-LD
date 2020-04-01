@@ -710,7 +710,7 @@ class FEMB_MEAS: #for one FEMB
                       fpga_dac=0, asic_dac=0, slk0 = 0, slk1= 0):
         savepath = self.wib_savepath (path, step)
         fembs_np = femb_on_wib #[0,1,2,3]
-        print "Sort trigger starts, please wait"
+        print "HW trigger starts, please wait"
 
         if (not(self.jumbo_flag)):
             self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1FB)
