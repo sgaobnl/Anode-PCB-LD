@@ -664,7 +664,7 @@ class CE_RUNS:
         return runpath
 
 
-    def soft_triger_run(self, apa_oft_info, sgs = [1,3], tps =[0,1,2,3]): 
+    def soft_triger_run(self, apa_oft_info, sgs = [1,3], tps =[0,1,2,3], map_en = False): 
         run_code, val, runpath = self.save_setting(run_code="8", val=100) 
         for wib_addr in range(len(self.wib_ips)):
             wib_ip = self.wib_ips[wib_addr]
@@ -686,7 +686,11 @@ class CE_RUNS:
             for sg in sgs:
                 for tp in tps:
                     step = "WIB" + format(wib_pos, '02d') + "step" + str(sg) + run_code
-                    self.femb_meas.soft_triger_acq(runpath, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
+                    if (map_en):
+                        self.femb_meas.soft_triger_map(runpath, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=1, \
+                                     fpga_dac=1, asic_dac=0, slk0 = self.slk0, slk1= self.slk1)
+                    else:
+                        self.femb_meas.soft_triger_acq(runpath, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
                                      fpga_dac=0, asic_dac=0, slk0 = self.slk0, slk1= self.slk1)
 
             self.WIB_UDP_CTL(wib_ip, WIB_UDP_EN = False)
