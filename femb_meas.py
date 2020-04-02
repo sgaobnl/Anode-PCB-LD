@@ -657,9 +657,9 @@ class FEMB_MEAS: #for one FEMB
         print "Sort trigger starts, please wait"
 
         if (not(self.jumbo_flag)):
-            self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1FB)
+            self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1F4)
         else:
-            self.femb_config.femb.write_reg_wib_checked (0x1F, 0xEFB)
+            self.femb_config.femb.write_reg_wib_checked (0x1F, 0xEF1)
 
         for femb_addr in fembs_np:
             self.fe_reg.set_fe_board() # reset the registers value
@@ -733,9 +733,9 @@ class FEMB_MEAS: #for one FEMB
         print "Sort trigger starts, please wait"
 
         if (not(self.jumbo_flag)):
-            self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1FB)
+            self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1F4)
         else:
-            self.femb_config.femb.write_reg_wib_checked (0x1F, 0xEFB)
+            self.femb_config.femb.write_reg_wib_checked (0x1F, 0xEF1)
 
         for femb_addr in fembs_np:
             self.fe_reg.set_fe_board() # reset the registers value
@@ -788,9 +788,9 @@ class FEMB_MEAS: #for one FEMB
         print "HW trigger starts, please wait"
 
         if (not(self.jumbo_flag)):
-            self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1FB)
+            self.femb_config.femb.write_reg_wib_checked (0x1F, 0x1F4)
         else:
-            self.femb_config.femb.write_reg_wib_checked (0x1F, 0xEFB)
+            self.femb_config.femb.write_reg_wib_checked (0x1F, 0xEF1)
 
         for femb_addr in fembs_np:
             self.fe_reg.set_fe_board() # reset the registers value

@@ -511,8 +511,8 @@ class FEMB_UDP:
             tsp = str(int(time.time() * 100 ))
             filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
             stop_flg = False
+            timeout_cnt = 0
             while ( not stop_flg ):
-                timeout_cnt = 0
                 data = None
                 try:
                     data = sock_data.recv(8192)
