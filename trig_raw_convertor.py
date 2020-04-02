@@ -122,9 +122,7 @@ def raw_convertor_conv(fp, jumbo_flag=True):
                     onepkgdata = dataNtuple[int(links_face_pos[i][j]) : int(links_face_pos[i][j]) +25 ]
                     chn_data, cycle_del =  rawto32chn(onepkgdata, chn_data)
             link_data[i] = chn_data
-        femb_data = link_data[0] + link_data[0] + link_data[0] + link_data[0] 
-#        for i in range(128):
-#            print (len(femb_data[i]))
+        femb_data = link_data[0] + link_data[1] + link_data[2] + link_data[3] 
     return femb_data
 
 import matplotlib.pyplot as plt
@@ -132,14 +130,12 @@ import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
 import matplotlib.mlab as mlab
 
-
 def mk_plot(femb_data):
     for j in range(8):
         fig = plt.figure(figsize=(16,8))
         plt.rcParams.update({'font.size': 6})
         for i in range(16):
             chn = 16*j + i
-#            print ((int(i//2), int(i%8)))
             ax = plt.subplot2grid((8,2), (int(i%8), int(i//8)),  colspan=1, rowspan=1)
             x = np.arange(len(femb_data[chn])) * 0.5
             y = np.array(femb_data[chn])%0x10000
@@ -158,71 +154,6 @@ def mk_plot(femb_data):
 
 
 fp = "/Users/shanshangao/Documents/tmp/run11tri/WIB00step18_FEMB0_B8_158580569657.bin"
+fp = "/Users/shanshangao/Documents/tmp/run11tri/WIB00step18_FEMB0_B8_158580569681.bin"
 fembdata = raw_convertor_conv(fp)
 mk_plot(fembdata)
-#def femb_raw(wib_cycle_femb_chip, femb=0, sync_chns=128):
-#    femb_rawdata = []
-#    for chn in range(sync_chns):
-#        chndata = []
-#        chipx2 = (chn//32)*2
-#        chipchn = chn%32
-#        for cycledata in wib_cycle_femb_chip:
-#            for fembdata in cycledata[1]: #cycle_femb_chip
-#                if fembdata[0] == femb :
-#                    for chipdata in fembdata[1] :
-#                        if chipdata[0] == chipx2:
-#                            for sdata in chipdata[1][chipchn]:
-#                                chndata.append(sdata & 0x0FFFF ) #clear feed info
-#        femb_rawdata.append(chndata)
-#    return femb_rawdata
-
-#import sys
-##rmsstrdate = sys.argv[1] #
-##rmsstrrun = sys.argv[2]  #
-##strenv = sys.argv[3]
-##rmsstrstep = sys.argv[4]
-##cycle = int(sys.argv[5])
-##jumbo_flag = sys.argv[6]
-##server_flg = sys.argv[7]
-##
-##if (jumbo_flag == "True"):
-##    jumbo_flag = True
-##else:
-##    jumbo_flag = False
-##
-##if (server_flg == "server" ):
-##    datepath = "/nfs/rscratch/bnl_ce/shanshan/Rawdata/APA3/Rawdata_"+ rmsstrdate + "/" 
-##else:
-##    datepath = "/Users/shanshangao/Documents/Share_Windows/CERN_test_stand/Rawdata/Rawdata_"+ rmsstrdate + "/" 
-##
-##femb_set = strenv+"step" +rmsstrstep
-##run_no = "run" + rmsstrrun
-##rawpath = datepath + run_no + "/"
-##step_np =[ "WIB04"+femb_set]
-##chip_np=[0,2,4,6]
-##femb_np=[0,1,2,3]
-##
-##for step in step_np:
-##    path = rawpath
-##    #path = rawpath + step + "/"
-##    print path
-##    for root, dirs, files in os.walk(path):
-##        break
-##
-##    for onefile in files:
-##        if ( onefile.find("_0000.bin") >= 0 ) and ( onefile.find("FEMB0CHIP0") >= 0 ) :
-##            pos = onefile.find("FEMB0CHIP0")
-##            fe_cfg = onefile[pos+12]
-##            break
-##
-##    for femb in range(4):
-##        for tp_no in ["0","1","2","3"]:
-##            fe_cfg_r = tp_no + fe_cfg
-##            wib_cycle_femb_chip = raw_convertor_brombreg(path, step,  fe_cfg_r, femb_np,chip_np, cycle, jumbo_flag)
-##            femb_rawdata = femb_raw(wib_cycle_femb_chip, femb, sync_chns=128)
-##            
-##            import pickle
-##            savefile = rawpath + step + "FEMB"+ str(femb)+"_" +  fe_cfg_r + ".bin"
-##            with open(savefile, 'wb') as fp:
-##                pickle.dump(femb_rawdata, fp)
-#    
