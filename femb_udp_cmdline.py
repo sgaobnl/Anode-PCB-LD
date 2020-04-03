@@ -509,7 +509,7 @@ class FEMB_UDP:
             self.write_reg_send(sock_write, hw_trig_mode, wib=True) #
             rawdataPackets = [] 
             tsp = str(int(time.time() * 100 ))
-            filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
+            #filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
             stop_flg = False
             timeout_cnt = 0
             while ( not stop_flg ):
@@ -519,6 +519,12 @@ class FEMB_UDP:
                 except socket.timeout:
                     print ("UDP timeout, no data is received in the past 5 second")
                     timeout_cnt = timeout_cnt + 1
+                    filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
+                    if (len(rawdataPackets) > 0 ):
+                        rawdata_str = ''.join(rawdataPackets)
+                        with open(filename,"wb") as f:
+                            f.write(rawdata_str) 
+                    rawdataPackets = [] 
                 if data != None :
                     timeout_cnt = 0
                     rawdataPackets.append(data)
@@ -530,11 +536,6 @@ class FEMB_UDP:
                     else:
                         stop_flg = False
                         timeout_cnt = 0
-            if (len(rawdataPackets) > 0 ):
-                rawdata_str = ''.join(rawdataPackets)
-                with open(filename,"wb") as f:
-                    f.write(rawdata_str) 
-
         self.write_reg_send(sock_write, nor_mode, wib=True) #
         time.sleep(0.1)
         empty_udp = False
