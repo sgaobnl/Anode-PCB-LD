@@ -107,7 +107,9 @@ def raw_convertor_conv(fp, femb_num = 1, jumbo_flag=True):
                 links_data[link_i] = np.append(links_data[link_i] , udp_pkg[9:])
             else:
                 links_data[link_i] = np.append(links_data[link_i] , udp_pkg[8:])
-            if (b-a) < pkg_len:
+
+            if (b-a) < pkg_len-10:
+                print (b, a, b-a, pkg_len)
                 link_i +=1
 
         links_face_pos = []
@@ -190,7 +192,7 @@ import matplotlib.patches as mpatches
 import matplotlib.mlab as mlab
 
 def mk_plot(femb_data):
-    for j in range(8):
+    for j in range(2):
         fig = plt.figure(figsize=(16,8))
         plt.rcParams.update({'font.size': 6})
         for i in range(16):
@@ -198,7 +200,9 @@ def mk_plot(femb_data):
             ax = plt.subplot2grid((8,2), (int(i%8), int(i//8)),  colspan=1, rowspan=1)
             x = np.arange(len(femb_data[chn])) * 0.5
             y = np.array(femb_data[chn])%0x10000
-            ax.plot(x[0:150], y[0:150], marker = '.', label="CH%d"%chn)
+
+            #ax.plot(x[0:150], y[0:150], marker = '.', label="CH%d"%chn)
+            ax.plot(x, y, marker = '.', label="CH%d"%chn)
             ax.set_ylim((1000, 3500))
             ax.set_xlabel("Time / us")
             ax.set_ylabel("ADC counts / LSB")
@@ -212,8 +216,9 @@ def mk_plot(femb_data):
 
 
 
+fp = "/Users/shanshangao/Downloads/WIB00step18_FEMB0_B8_158635190902.bin"
 #fp = "/Users/shanshangao/Documents/tmp/run11tri/WIB00step18_FEMB0_B8_158580569657.bin"
-fp = "/Users/shanshangao/Documents/tmp/run10tri/WIB00step18_FEMB0_B9_158579563062.bin"
+#fp = "/Users/shanshangao/Documents/tmp/run10tri/WIB00step18_FEMB0_B9_158579563062.bin"
 #fp = "/Users/shanshangao/Documents/tmp/run11tri/WIB00step18_FEMB0_B8_158580569681.bin"
 fembdata = raw_convertor_conv(fp)
 mk_plot(fembdata)
