@@ -503,39 +503,54 @@ class FEMB_UDP:
                 
         print ("Hardware trigger is enabled")
         print ("Please feed trigger signal to 1st LEMO connector on WIB") 
-        print ("You have to stop external tirgger first but you stop the script!!!")
+        #print ("You have to stop external tirgger first but you stop the script!!!")
+        events_perfile = int( raw_input("How many appropriate events you would like to save in a file  >> ") )
         tri_rdy = raw_input("Is external trigger ready? (Y/N) >> ")
+        print ("To stop the script, please click \"Ctrl\" + \"C\", and then \"N\" for \"Terminate batch job (Y/N)?\"") 
         if "Y" in tri_rdy:
             self.write_reg_send(sock_write, hw_trig_mode, wib=True) #
             rawdataPackets = [] 
-            tsp = str(int(time.time() * 100 ))
-            #filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
             stop_flg = False
             timeout_cnt = 0
-            while ( not stop_flg ):
-                data = None
-                try:
-                    data = sock_data.recv(8192)
-                except socket.timeout:
-                    print ("UDP timeout, no data is received in the past 5 second")
-                    timeout_cnt = timeout_cnt + 1
-                    filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
-                    if (len(rawdataPackets) > 0 ):
-                        rawdata_str = ''.join(rawdataPackets)
-                        with open(filename,"wb") as f:
-                            f.write(rawdata_str) 
-                    rawdataPackets = [] 
-                if data != None :
-                    timeout_cnt = 0
-                    rawdataPackets.append(data)
-                if (timeout_cnt > 20):
-                    print ("No trigger data for 100 seconds, do you want to exit")
-                    if ("Y" in raw_input ("Y/N : ")):
-                        stop_flg = True
+            while (not stop_flg):
+                tmp_e = 0
+                while ( not stop_flg ):
+                    data = None
+                    try:
+                        data = sock_data.recv(8192)
+                        if (len(data)) <= 0x1000: #normal packge size = 0x1df2, the length of last package of link of each event is 0x6b6
+                            tmp_e = tmp_e + 1 
+                    except socket.timeout:
+                        print ("UDP timeout, no data is received in the past 5 second")
+                        timeout_cnt = timeout_cnt + 1
+                        filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + str(int(time.time() * 100 )) + ".bin"
+                        print (filename)
+                        if (len(rawdataPackets) > 0 ):
+                            rawdata_str = ''.join(rawdataPackets)
+                            with open(filename,"wb") as f:
+                                f.write(rawdata_str) 
+                        rawdataPackets = [] 
+
+                    if ((tmp_e//4) >= events_perfile) and (tmp_e%4 == 0):
+                        filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + str(int(time.time() * 100 )) + ".bin"
+                        print (filename)
+                        if (len(rawdataPackets) > 0 ):
+                            rawdata_str = ''.join(rawdataPackets)
+                            with open(filename,"wb") as f:
+                                f.write(rawdata_str) 
+                        rawdataPackets = [] 
                         break
-                    else:
-                        stop_flg = False
+                    if data != None :
                         timeout_cnt = 0
+                        rawdataPackets.append(data)
+                    if (timeout_cnt > 20):
+                        print ("No trigger data for 100 seconds, do you want to exit")
+                        if ("Y" in raw_input ("Exit (Y/N) : ")):
+                            stop_flg = True
+                            break
+                        else:
+                            stop_flg = False
+                            timeout_cnt = 0
         self.write_reg_send(sock_write, nor_mode, wib=True) #
         time.sleep(0.1)
         empty_udp = False
