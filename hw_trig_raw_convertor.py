@@ -187,6 +187,8 @@ fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run02tri/WIB00step18_FEMB_B8_
 fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run03tri/WIB00step18_FEMB_B8_158690397645.bin"
 fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run04tri/WIB00step18_FEMB_B8_158690406497.bin"
 fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run06tri/WIB00step18_FEMB_B9_158690538904.bin"
+fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run07tri/WIB00step18_FEMB_B9_158690553492.bin"
+fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run05tri/WIB00step18_FEMB_B8_158690433945.bin"
 trigno = int(input("Please input a trigger event number starting from 1 >>"))
 fembdata = raw_convertor_conv(fp, trigno = trigno)
 mk_plot(fembdata)

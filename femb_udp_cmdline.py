@@ -539,6 +539,19 @@ class FEMB_UDP:
                             with open(filename,"wb") as f:
                                 f.write(rawdata_str) 
                         rawdataPackets = [] 
+
+                        self.write_reg_send(sock_write, acq_mode, wib=True) # wait for a trigger
+                        empty_udp = False
+                        while ( empty_udp != True ):
+                            try:
+                                data = sock_data.recv(8192)
+                            except socket.timeout:
+                                self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
+                                print "Empty UDP buffer"
+                                empty_udp = True 
+                                break
+                        self.write_reg_send(sock_write, hw_trig_mode, wib=True) #
+ 
                         break
                     if data != None :
                         timeout_cnt = 0
