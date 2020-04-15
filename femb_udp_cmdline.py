@@ -542,14 +542,16 @@ class FEMB_UDP:
 
                         self.write_reg_send(sock_write, acq_mode, wib=True) # wait for a trigger
                         empty_udp = False
+                        sock_data.settimeout(1)
                         while ( empty_udp != True ):
                             try:
                                 data = sock_data.recv(8192)
                             except socket.timeout:
                                 self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
-                                print "Empty UDP buffer"
+                                print "Empty UDP buffer (cause 1s dead time)"
                                 empty_udp = True 
                                 break
+                        sock_data.settimeout(5)
                         self.write_reg_send(sock_write, hw_trig_mode, wib=True) #
  
                         break

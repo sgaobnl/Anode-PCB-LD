@@ -782,7 +782,7 @@ class FEMB_MEAS: #for one FEMB
             trig_num = int(raw_input ("How many software triggers? (enter 0 exit): "))
 
     def hw_triger_acq(self, path, step, femb_on_wib, sg, tp, adc_oft_regs_np, yuv_bias_regs_np, clk_cs=1, pls_cs = 1, dac_sel=0, \
-                      fpga_dac=0, asic_dac=0, slk0 = 0, slk1= 0):
+                      fpga_dac=0, asic_dac=0, slk0 = 0, slk1= 0, map_en = False):
         savepath = self.wib_savepath (path, step)
         fembs_np = femb_on_wib #[0,1,2,3]
         print "HW trigger starts, please wait"
@@ -794,7 +794,30 @@ class FEMB_MEAS: #for one FEMB
 
         for femb_addr in fembs_np:
             self.fe_reg.set_fe_board() # reset the registers value
-            self.fe_reg.set_fe_board(sg=sg, st=tp, sts=0, smn=0, sdf=1, slk0=slk0, slk1=slk1 )
+            if (not map_en):
+                self.fe_reg.set_fe_board(sg=sg, st=tp, sts=0, smn=0, sdf=1, slk0=slk0, slk1=slk1 )
+            else:
+                dac_sel = 1
+                fpga_dac = 1
+                self.fe_reg.set_fe_board(sg=sg, st=tp, sts=0, smn=0, sdf=1, slk0=slk0, slk1=slk1, swdac =2, dac=0 )
+                self.fe_reg.set_fechn_reg(chip=0, chn=0, sts=1, sg=1, st=0)
+                self.fe_reg.set_fechn_reg(chip=1, chn=1, sts=1, sg=1, st=1)
+                self.fe_reg.set_fechn_reg(chip=2, chn=2, sts=1, sg=1, st=2)
+                self.fe_reg.set_fechn_reg(chip=3, chn=3, sts=1, sg=1, st=3)
+                self.fe_reg.set_fechn_reg(chip=4, chn=4, sts=1, sg=3, st=0)
+                self.fe_reg.set_fechn_reg(chip=5, chn=5, sts=1, sg=3, st=1)
+                self.fe_reg.set_fechn_reg(chip=6, chn=6, sts=1, sg=3, st=2)
+                self.fe_reg.set_fechn_reg(chip=7, chn=7, sts=1, sg=3, st=3)
+
+                self.fe_reg.set_fechn_reg(chip=0, chn=8+0, sts=1, sg=3, st=0)
+                self.fe_reg.set_fechn_reg(chip=1, chn=8+1, sts=1, sg=3, st=1)
+                self.fe_reg.set_fechn_reg(chip=2, chn=8+2, sts=1, sg=3, st=2)
+                self.fe_reg.set_fechn_reg(chip=3, chn=8+3, sts=1, sg=3, st=3)
+                self.fe_reg.set_fechn_reg(chip=4, chn=8+4, sts=1, sg=1, st=0)
+                self.fe_reg.set_fechn_reg(chip=5, chn=8+5, sts=1, sg=1, st=1)
+                self.fe_reg.set_fechn_reg(chip=6, chn=8+6, sts=1, sg=1, st=2)
+                self.fe_reg.set_fechn_reg(chip=7, chn=8+7, sts=1, sg=1, st=3)
+
             fe_regs = copy.deepcopy(self.fe_reg.REGS)
             adc_regs = self.adc_clk_engr_config (adc_oft_regs_np[femb_addr], clk_cs = clk_cs, adc_en_gr = 1, adc_offset = 0 )
             fe_bias_regs = self.fe_regs_bias_config(fe_regs, yuv_bias_regs_np[femb_addr] ) #one FEMB
