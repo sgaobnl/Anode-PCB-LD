@@ -192,7 +192,7 @@ import matplotlib.patches as mpatches
 import matplotlib.mlab as mlab
 
 def mk_plot(femb_data):
-    for j in range(2):
+    for j in range(8):
         fig = plt.figure(figsize=(16,8))
         plt.rcParams.update({'font.size': 6})
         for i in range(16):
@@ -216,9 +216,9 @@ def mk_plot(femb_data):
 
 
 
-fp = "/Users/shanshangao/Downloads/WIB00step18_FEMB0_B8_158635190902.bin"
+#fp = "/Users/shanshangao/Downloads/WIB00step18_FEMB0_B8_158635190902.bin"
 #fp = "/Users/shanshangao/Documents/tmp/run11tri/WIB00step18_FEMB0_B8_158580569657.bin"
 #fp = "/Users/shanshangao/Documents/tmp/run10tri/WIB00step18_FEMB0_B9_158579563062.bin"
-#fp = "/Users/shanshangao/Documents/tmp/run11tri/WIB00step18_FEMB0_B8_158580569681.bin"
+fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run03tri/WIB00step18_FEMB0_B8_158691165651.bin"
 fembdata = raw_convertor_conv(fp)
 mk_plot(fembdata)

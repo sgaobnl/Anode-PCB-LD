@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 1/13/2018 3:05:03 PM
-Last modified: 4/2/2020 12:27:27 AM
+Last modified: 4/15/2020 2:47:58 AM
 """
 
 #defaut setting for scientific caculation
@@ -42,7 +42,7 @@ if (ceruns.APA == "Anode_PCB"):
     print (ceruns.APA)
     ceruns.wib_version_id = 0x121
     ceruns.femb_ver_id = 0x501
-    ceruns.path = "C:/Anode_PCB/Rawdata/" 
+    ceruns.path = "C:/Users/mspanu\Desktop/Anode_PCB_LD_master/Rawdata/" 
     ceruns.wib_ips = [  "192.168.121.1"  ]
     ceruns.wib_pwr_femb = [[1,0,0,0],]
     ceruns.femb_mask    = [[0,0,0,0]]
@@ -228,12 +228,12 @@ if (test_runs&0x08 != 0x0 ):
     print "Hardware Trigger mode"
     print "time cost = %.3f seconds"%(timer()-start)
     chk_path = ceruns.hw_triger_run(apa_oft_info, sgs=[1], tps=[3] )
+    #chk_path = ceruns.hw_triger_run(apa_oft_info, sgs=[1], tps=[3], map_en=True )
     with open(logfile, "a+") as f:
         f.write( "%2X: Quick Checkout Test\n" %(test_runs&0x20) ) 
         f.write (ceruns.runpath + "\n" )
         f.write (ceruns.runtime + "\n" )
         f.write ("Alive FEMBs: " + str(ceruns.alive_fembs) + "\n" )
-
 
 if (test_runs&0x80 != 0x0 ):
     print "Turn FEMBs OFF"

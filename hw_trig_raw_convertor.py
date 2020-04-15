@@ -183,8 +183,10 @@ def mk_plot(femb_data):
 
 
 #fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run01tri/WIB00step18_FEMB_B8_158690184651.bin"
-fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run02tri/WIB00step18_FEMB_B8_158690806619.bin"
-fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run03tri/WIB00step18_FEMB_B8_158690819857.bin"
+fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run01tri/WIB00step18_FEMB_B8_158691117000.bin"
+#fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run02tri/WIB00step18_FEMB_B8_158691147985.bin"
+#fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run02tri/WIB00step18_FEMB_B8_158691068509.bin"
+#fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run03tri/WIB00step18_FEMB_B8_158690819857.bin"
 #fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run04tri/WIB00step18_FEMB_B8_158690406497.bin"
 #fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run06tri/WIB00step18_FEMB_B9_158690538904.bin"
 #fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run07tri/WIB00step18_FEMB_B9_158690553492.bin"
