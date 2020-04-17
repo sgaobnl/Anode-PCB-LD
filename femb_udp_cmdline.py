@@ -511,7 +511,7 @@ class FEMB_UDP:
             self.write_reg_send(sock_write, hw_trig_mode, wib=True) #
             rawdataPackets = [] 
             stop_flg = False
-            timeout_cnt = 0
+            #timeout_cnt = 0
             while (not stop_flg):
                 tmp_e = 0
                 while ( not stop_flg ):
@@ -522,14 +522,14 @@ class FEMB_UDP:
                             tmp_e = tmp_e + 1 
                     except socket.timeout:
                         print ("UDP timeout, no data is received in the past 5 second")
-                        timeout_cnt = timeout_cnt + 1
-                        filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + str(int(time.time() * 100 )) + ".bin"
-                        print (filename)
-                        if (len(rawdataPackets) > 0 ):
-                            rawdata_str = ''.join(rawdataPackets)
-                            with open(filename,"wb") as f:
-                                f.write(rawdata_str) 
-                        rawdataPackets = [] 
+                        #timeout_cnt = timeout_cnt + 1
+                        #filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + str(int(time.time() * 100 )) + ".bin"
+                        #print (filename)
+                        #if (len(rawdataPackets) > 0 ):
+                        #    rawdata_str = ''.join(rawdataPackets)
+                        #    with open(filename,"wb") as f:
+                        #        f.write(rawdata_str) 
+                        #rawdataPackets = [] 
 
                     if ((tmp_e//4) >= events_perfile) and (tmp_e%4 == 0):
                         filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + str(int(time.time() * 100 )) + ".bin"
@@ -556,16 +556,16 @@ class FEMB_UDP:
  
                         break
                     if data != None :
-                        timeout_cnt = 0
+                        #timeout_cnt = 0
                         rawdataPackets.append(data)
-                    if (timeout_cnt > 20):
-                        print ("No trigger data for 100 seconds, do you want to exit")
-                        if ("Y" in raw_input ("Exit (Y/N) : ")):
-                            stop_flg = True
-                            break
-                        else:
-                            stop_flg = False
-                            timeout_cnt = 0
+                    #if (timeout_cnt > 20):
+                    #    print ("No trigger data for 100 seconds, do you want to exit")
+                    #    if ("Y" in raw_input ("Exit (Y/N) : ")):
+                    #        stop_flg = True
+                    #        break
+                    #    else:
+                    #        stop_flg = False
+                    #        timeout_cnt = 0
         self.write_reg_send(sock_write, nor_mode, wib=True) #
         time.sleep(0.1)
         empty_udp = False
