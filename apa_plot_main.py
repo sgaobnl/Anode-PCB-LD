@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 7/15/2016 11:47:39 AM
-Last modified: 3/13/2020 3:06:54 AM
+Last modified: 3/1/2021 6:44:59 AM
 """
 import matplotlib
 matplotlib.use('Agg')
@@ -38,7 +38,7 @@ from apa_plot_out import dict_filter
 from apa_plot_out import dict_del_chn
 
 APAno = 9
-datafp = "../SBND_FEMB_ACQ/data_path.txt"
+datafp = "./data_path.txt"
 with open(datafp, 'r') as f:
     chk_path = f.readline().replace("\n", "")
     rms_path = f.readline().replace("\n", "")
@@ -67,7 +67,7 @@ else:
     asic_rootpath = rms_rootpath
     asicrunno = "run99asi"
 
-loc = 1
+loc = 2
 fembs_on_apa = [loc] 
 
 sum_path = rms_rootpath + "results/" + "APA%d_"%APAno + rmsrunno + "_" + fpgarunno + "_" + asicrunno +"/"

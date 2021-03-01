@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 7/15/2016 11:47:39 AM
-Last modified: 3/13/2020 3:01:41 AM
+Last modified: 2/19/2021 1:58:06 PM
 """
 
 #defaut setting for scientific caculation
@@ -395,7 +395,7 @@ def results_save(rms_rootpath, fpga_rootpath, asic_rootpath,  APAno, rmsrunno, f
 if __name__ == '__main__':
 #    APAno = int(sys.argv[1])
     APAno = 9
-    datafp = "../SBND_FEMB_ACQ/data_path.txt"
+    datafp = "./data_path.txt"
     with open(datafp, 'r') as f:
         chk_path = f.readline().replace("\n", "")
         rms_path = f.readline().replace("\n", "")

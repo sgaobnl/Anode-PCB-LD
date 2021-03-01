@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 7/15/2016 11:47:39 AM
-Last modified: Wed 06 Jun 2018 06:55:46 AM CEST
+Last modified: 2/18/2021 11:18:21 PM
 """
 
 #defaut setting for scientific caculation
@@ -220,5 +220,6 @@ def mk_plot(femb_data):
 #fp = "/Users/shanshangao/Documents/tmp/run11tri/WIB00step18_FEMB0_B8_158580569657.bin"
 #fp = "/Users/shanshangao/Documents/tmp/run10tri/WIB00step18_FEMB0_B9_158579563062.bin"
 fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run03tri/WIB00step18_FEMB0_B8_158691165651.bin"
+fp = "D:/BO_FEMBs/Rawdata/Rawdata_02_18_2021/run01tri/WIB00step18_FEMB0_B8_161367603585.bin"
 fembdata = raw_convertor_conv(fp)
 mk_plot(fembdata)

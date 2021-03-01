@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 7/15/2016 11:47:39 AM
-Last modified: 3/13/2020 2:08:35 AM
+Last modified: 2/28/2021 3:16:21 PM
 """
 #import matplotlib
 #matplotlib.use('Agg')
@@ -212,17 +212,17 @@ def sub_rms_c_plot5 (ax, dicts, rms_cs="rms", cali_cs="fpg_gain", fembs_on_apa =
 
             ax.plot(apachn, enc,color="C" + str(loc%10))
             ax.scatter(apachn, enc, marker='.',color="C" + str(loc%10))
-            ax.text(apachn[5], ymax*0.96, apaloc, fontsize=8)
-            ax.text(apachn[5], ymax*0.92, "wib%d"%wibno, fontsize=6)
-            ax.text(apachn[5], ymax*0.88, "femb%d"%fembno, fontsize=6)
-            ax.text(apachn[5], ymax*0.80, "%de$^-$"%encmean, fontsize=6)
-            ax.text(apachn[5], ymax*0.76, "$\pm$%d"%encstd, fontsize=6)
+            ax.text(apachn[5], ymax*0.96, apaloc )#, fontsize=24)
+            ax.text(apachn[5], ymax*0.92, "wib%d"%wibno )#, fontsize=18)
+            ax.text(apachn[5], ymax*0.88, "femb%d"%fembno )#, fontsize=18)
+            ax.text(apachn[5], ymax*0.80, "%de$^-$"%encmean )#, fontsize=18)
+            ax.text(apachn[5], ymax*0.76, "$\pm$%d"%encstd )#, fontsize=18)
             ax.vlines(apachn[0], 0, ymax, color='b',linestyles="dotted", linewidth=0.8)
         else:
             if ( loc == 1):
-                ax.text(5, ymax*0.96, "Dead", fontsize=8)
+                ax.text(5, ymax*0.96, "Dead" )#, fontsize=18)
             else:
-                ax.text(5+(loc-1)*len(apachn), ymax*0.96, "Dead", fontsize=8)
+                ax.text(5+(loc-1)*len(apachn), ymax*0.96, "Dead" )#, fontsize=18)
                 ax.vlines((loc-1)*len(apachn), 0, ymax, color='b',linestyles="dotted", linewidth=0.8)
  
     ax.set_ylim([0,ymax])
@@ -266,13 +266,13 @@ def sub_rms_p_plot5 (ax, dicts, rms_cs="hfrms" ) :
     weights = np.ones_like(cmp_rms)/float(len(cmp_rms))
     #ax.hist(cmp_rms, weights=weights, bins=20, range=(0.05, 2.05),  stacked = True, histtype='bar', label= label, color='b', rwidth=0.9 )
     ax.hist(cmp_rms, weights=weights, bins=20, stacked = True, histtype='bar', label= label, color='b', rwidth=0.9 )
-    ax.set_xlabel("Ratio", fontsize = 8)
+    ax.set_xlabel("Ratio" )#, fontsize = 24)
     tp = int( dicts[0]["tp"]) / 10.0
     gain = int(dicts[0]["gain"]) / 10.0
-    ax.set_title( "ENC(Raw Data)/ENC(%s) @ (%2.1fmV/fC, %1.1f$\mu$s)"%(t, gain, tp), fontsize = 10 )
-    ax.set_ylabel("Normalized channels", fontsize = 8)
+    ax.set_title( "ENC(Raw Data)/ENC(%s) @ (%2.1fmV/fC, %1.1f$\mu$s)"%(t, gain, tp) )#, fontsize = 32 )
+    ax.set_ylabel("Normalized channels" )#, fontsize = 24)
     ax.set_ylim([0,1])
-    ax.legend(loc='best', fontsize=9)
+    ax.legend(loc='best' )#, fontsize=27)
 
 def apa_plot5 (pp, orgdicts, title="APA ENC vs. Tp", rmstype="sfrms", calitype="fpg_gain" , fembs_on_apa = range(1, 21, 1)) :
     gs=["250", "140"]
@@ -289,6 +289,8 @@ def apa_plot5 (pp, orgdicts, title="APA ENC vs. Tp", rmstype="sfrms", calitype="
 
 def rms_c_plot5 (pp, dicts, title="RMS Compare" ) :
     fig = plt.figure(figsize=(16,9))
+    plt.rcParams.update({'font.size': 18})
+    plt.rcParams.update({'font.size': 24})
     ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=2, rowspan=2)
     ax2 = plt.subplot2grid((4, 4), (0, 2), colspan=2, rowspan=2)
     ax3 = plt.subplot2grid((4, 4), (2, 0), colspan=2, rowspan=2)
@@ -367,7 +369,7 @@ def sub_enctp_plot0 (ax, g,calitype, tp_us, xchns, xenc_tps, vchns, venc_tps, uc
     #    maxy = (maxy//1000 + 1)*1000
     #else:
     #    maxy = 1000
-    maxy = 2000
+    maxy = 1000
     ax.set_ylim([0,maxy])
     ax.set_ylabel("ENC /e-")
     ax.set_title(title )
@@ -375,6 +377,8 @@ def sub_enctp_plot0 (ax, g,calitype, tp_us, xchns, xenc_tps, vchns, venc_tps, uc
 
 def plot0_overall_enc (pp, orgdicts, title="APA ENC vs. Tp", calitype="fpg_gain", sfhf = "sf" ) :
     fig = plt.figure(figsize=(16,9))
+    plt.rcParams.update({'font.size': 18})
+    plt.rcParams.update({'font.size': 24})
     #ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=2, rowspan=2)
     ax2 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=4)
     #ax3 = plt.subplot2grid((4, 4), (2, 0), colspan=2, rowspan=2)
@@ -446,7 +450,7 @@ def plot0_overall_enc (pp, orgdicts, title="APA ENC vs. Tp", calitype="fpg_gain"
             #else:
             #    sub_enctp_plot0 (ax4, g, calitype, tp_us, xchns, xhfenc_tps, vchns, vhfenc_tps, uchns, uhfenc_tps, note="HPF data") 
 
-    fig.suptitle("Noise Measurement", fontsize = 16)
+    fig.suptitle("Noise Measurement" )#, fontsize = 32)
     plt.tight_layout( rect=[0, 0.05, 1, 0.95])
     plt.savefig(pp, format='pdf')
 #    plt.show()
@@ -456,6 +460,9 @@ def plot0_overall_enc (pp, orgdicts, title="APA ENC vs. Tp", calitype="fpg_gain"
 ###############################################################################################################################
 def plot1_chns_enc_1 (pp, orgdicts, title="APA ENC s. Tp",  cali_cs="fpg_gain", rms_cs = "raw", gs=["250"], tp = "20", loc = 2) :
     fig = plt.figure(figsize=(16,9))
+    plt.rcParams.update({'font.size': 18})
+    plt.rcParams.update({'font.size': 24})
+
     ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=4)
 #    ax2 = plt.subplot2grid((4, 4), (3, 0), colspan=1, rowspan=1)
 #    ax3 = plt.subplot2grid((4, 4), (3, 1), colspan=1, rowspan=1)
@@ -525,7 +532,7 @@ def sub_chns_plot1_1 (ax, dicts, gs = ["250", "140", "078"], tp = "20",  rms_cs=
 
 def sub_chns_hist_plot1_1 (ax, dicts, rms_cs="rms", cali_cs="fpg_gain" ) :
     apachn = []
-    ymax = 2000
+    ymax = 1000
     tp = int( dicts[0]["tp"]) / 10.0
     gain = int(dicts[0]["gain"]) / 10.0
     apachn, rms, hfrms, sfrms, ped, hfped, sfped, fpg_gain, asi_gain, unstk_ratio = draw_results (dicts) 
@@ -568,6 +575,8 @@ def sub_chns_hist_plot1_1 (ax, dicts, rms_cs="rms", cali_cs="fpg_gain" ) :
 
 def plot1_chns_enc (pp, orgdicts, title="APA ENC s. Tp",  cali_cs="fpg_gain", rms_cs = "raw", g="250" , fembs_on_apa = range(1, 21, 1)) : #enctype, raw, hf, sf
     fig = plt.figure(figsize=(16,9))
+    plt.rcParams.update({'font.size': 18})
+    plt.rcParams.update({'font.size': 24})
     ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=3)
     ax2 = plt.subplot2grid((4, 4), (3, 0), colspan=1, rowspan=1)
     ax3 = plt.subplot2grid((4, 4), (3, 1), colspan=1, rowspan=1)
@@ -604,7 +613,7 @@ def sub_chns_plot1 (ax, dicts, rms_cs="rms", cali_cs="fpg_gain", fembs_on_apa = 
     for loc in fembs_on_apa:
         subdicts = enctp_sort_byapaloc (dicts,  apaloc=loc  ) 
         subdicts = enctp_sort_byfemb (subdicts ) 
-        ymax = 2000
+        ymax = 1000
         tp = int( dicts[0]["tp"]) / 10.0
         if subdicts != None:
             apaloc = subdicts[0]["apaloc"]
@@ -638,13 +647,13 @@ def sub_chns_plot1 (ax, dicts, rms_cs="rms", cali_cs="fpg_gain", fembs_on_apa = 
             else:
                 ax.plot(apachn, enc,color="C" + str(int(tp)))
             if (tp ==2):
-                ax.text(apachn[5], ymax*0.96, apaloc, fontsize=8)
-                ax.text(apachn[5], ymax*0.92, "wib%d"%wibno, fontsize=8)
-                ax.text(apachn[5], ymax*0.88, "femb%d"%fembno, fontsize=8)
+                ax.text(apachn[5], ymax*0.96, apaloc )#, fontsize=24)
+                ax.text(apachn[5], ymax*0.92, "wib%d"%wibno )#, fontsize=24)
+                ax.text(apachn[5], ymax*0.88, "femb%d"%fembno )#, fontsize=24)
                 ax.vlines(apachn[0], 0, ymax, color='b',linestyles="dotted", linewidth=0.8)
         else:
             if (tp ==2):
-                ax.text(5+(loc-1)*len(apachn), ymax*0.96, "Dead", fontsize=8)
+                ax.text(5+(loc-1)*len(apachn), ymax*0.96, "Dead" )#, fontsize=24)
                 if ( loc != 1):
                     ax.vlines((loc-1)*len(apachn), 0, ymax, color='b',linestyles="dotted", linewidth=0.8)
  
@@ -662,7 +671,7 @@ def sub_chns_plot1 (ax, dicts, rms_cs="rms", cali_cs="fpg_gain", fembs_on_apa = 
 
 def sub_chns_hist_plot1 (ax, dicts, rms_cs="rms", cali_cs="fpg_gain" ) :
     apachn = []
-    ymax = 2000
+    ymax = 1000
     tp = int( dicts[0]["tp"]) / 10.0
     gain = int(dicts[0]["gain"]) / 10.0
     apachn, rms, hfrms, sfrms, ped, hfped, sfped, fpg_gain, asi_gain, unstk_ratio = draw_results (dicts) 
@@ -751,12 +760,12 @@ def sub_ped_plot2 (ax, dicts , fembs_on_apa = range(1, 21, 1) ) :
                 ax.plot(apachn, ped,color="C" + str(int(tp)), label=label)
             else:
                 ax.plot(apachn, ped,color="C" + str(int(tp)))
-            ax.text(apachn[5], ymax*0.90, apaloc, fontsize=8)
-            ax.text(apachn[5], ymax*0.80, "wib%d"%wibno, fontsize=8)
-            ax.text(apachn[5], ymax*0.70, "femb%d"%fembno, fontsize=8)
+            ax.text(apachn[5], ymax*0.90, apaloc )#, fontsize=24)
+            ax.text(apachn[5], ymax*0.80, "wib%d"%wibno )#, fontsize=24)
+            ax.text(apachn[5], ymax*0.70, "femb%d"%fembno )#, fontsize=24)
             ax.vlines(apachn[0], 0, ymax, color='b',linestyles="dotted", linewidth=0.8)
         else:
-            ax.text(5+(loc-1)*len(apachn), ymax*0.90, "Dead", fontsize=8)
+            ax.text(5+(loc-1)*len(apachn), ymax*0.90, "Dead" )#, fontsize=24)
             if ( loc != 1):
                 ax.vlines((loc-1)*len(apachn), 0, ymax, color='b',linestyles="dotted", linewidth=0.8)
     ax.set_ylim([0,ymax])
@@ -812,6 +821,7 @@ def sub_ped_hist_plot2 (ax, dicts ) :
 
 def plot2_peds (pp, orgdicts, title="Pedestals", gs=["250"], tp="20", loc = 2  ) :
     fig = plt.figure(figsize=(16,9))
+    plt.rcParams.update({'font.size': 24})
     ax0 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=4)
 #    ax10 = plt.subplot2grid((4, 4), (1, 0), colspan=1, rowspan=1)
 #    ax11 = plt.subplot2grid((4, 4), (1, 1), colspan=1, rowspan=1)
@@ -875,7 +885,7 @@ def plot2_peds (pp, orgdicts, title="Pedestals", gs=["250"], tp="20", loc = 2  )
     #sub_ped_plot2 (ax3, dicts, fembs_on_apa = fembs_on_apa) 
 #    sub_ped_hist_plot2 (ax6, dicts ) 
 
-    fig.suptitle("Pedestal Measurement", fontsize = 16)
+    fig.suptitle("Pedestal Measurement" )#, fontsize = 32)
     plt.tight_layout( rect=[0, 0.05, 1, 0.95])
     plt.savefig(pp, format='pdf')
 #    plt.show()
@@ -918,6 +928,8 @@ def sub_gain_plot3 (ax, g, tp_us, xchns, xgain, vchns, vgain, uchns, ugain, titl
 
 def plot3_overall_gain (pp, orgdicts, title="APA Gain Measurement" ) :
     fig = plt.figure(figsize=(16,9))
+    plt.rcParams.update({'font.size': 18})
+    plt.rcParams.update({'font.size': 24})
     #ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=2, rowspan=2)
     ax2 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=4)
     #ax3 = plt.subplot2grid((4, 4), (2, 0), colspan=2, rowspan=2)
@@ -986,7 +998,7 @@ def plot3_overall_gain (pp, orgdicts, title="APA Gain Measurement" ) :
 #            #sub_gain_plot3 (ax3, g, tp_us, xchns, xfpg_dac, vchns, vfpg_dac, uchns, ufpg_dac, note="FPGA-DAC") 
 #            #sub_gain_plot3 (ax4, g, tp_us, xchns, xasi_dac, vchns, vasi_dac, uchns, uasi_dac, note="ASIC-DAC") 
  
-    fig.suptitle("Gain Measurement", fontsize = 16)
+    fig.suptitle("Gain Measurement" )#, fontsize = 32)
     plt.tight_layout( rect=[0, 0.05, 1, 0.95])
     plt.savefig(pp, format='pdf')
 #    plt.show()
@@ -996,6 +1008,8 @@ def plot3_overall_gain (pp, orgdicts, title="APA Gain Measurement" ) :
 ###############################################################################################################################
 def plot4_chns_gain (pp, orgdicts, title="Gain Measurement",  g="250", cali_cs="fpg_gain", fembs_on_apa = range(1, 21, 1) ): #enctype, raw, hf, sf
     fig = plt.figure(figsize=(16,9))
+    plt.rcParams.update({'font.size': 18})
+    plt.rcParams.update({'font.size': 24})
     ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=4)
     #ax2 = plt.subplot2grid((4, 4), (3, 0), colspan=1, rowspan=1)
     #ax3 = plt.subplot2grid((4, 4), (3, 1), colspan=1, rowspan=1)
@@ -1049,13 +1063,13 @@ def sub_gain_plot4 (ax, dicts, cali_cs="fpg_gain", fembs_on_apa = range(1, 21, 1
             else:
                 ax.plot(apachn, pgain,color="C" + str(int(tp)))
             if (tp ==2):
-                ax.text(apachn[5], ymax*0.96, apaloc, fontsize=8)
-                ax.text(apachn[5], ymax*0.92, "wib%d"%wibno, fontsize=8)
-                ax.text(apachn[5], ymax*0.88, "femb%d"%fembno, fontsize=8)
+                ax.text(apachn[5], ymax*0.96, apaloc )#, fontsize=24)
+                ax.text(apachn[5], ymax*0.92, "wib%d"%wibno )#, fontsize=24)
+                ax.text(apachn[5], ymax*0.88, "femb%d"%fembno )#, fontsize=24)
                 ax.vlines(apachn[0], 0, ymax, color='b',linestyles="dotted", linewidth=0.8)
         else:
             if (tp ==2):
-                ax.text(5+(loc-1)*len(apachn), ymax*0.96, "Dead", fontsize=8)
+                ax.text(5+(loc-1)*len(apachn), ymax*0.96, "Dead" )#, fontsize=24)
                 if ( loc != 1):
                     ax.vlines((loc-1)*len(apachn), 0, ymax, color='b',linestyles="dotted", linewidth=0.8)
     if (tp ==2):

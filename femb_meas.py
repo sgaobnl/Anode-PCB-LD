@@ -410,7 +410,7 @@ class FEMB_MEAS: #for one FEMB
 
             self.femb_config.config_femb_mode(femb_addr,  pls_cs, dac_sel, fpga_dac, asic_dac)
 
-            asic = 2
+            asic = 0
             val = 20
             if (not(self.jumbo_flag) ):
                 val = val*8
@@ -958,7 +958,7 @@ class FEMB_MEAS: #for one FEMB
     def __init__(self):
         self.freq = 500
         self.dly = 10 
-        self.peak_chn = 0 
+        self.peak_chn = 05
         self.ampl = 0 #% 32
         self.int_dac = 0 # or 0xA1
         self.dac_meas = self.int_dac  # or 60

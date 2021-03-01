@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 1/13/2018 3:05:03 PM
-Last modified: 4/15/2020 2:47:58 AM
+Last modified: 2/19/2021 12:31:12 PM
 """
 
 #defaut setting for scientific caculation
@@ -42,9 +42,9 @@ if (ceruns.APA == "Anode_PCB"):
     print (ceruns.APA)
     ceruns.wib_version_id = 0x121
     ceruns.femb_ver_id = 0x501
-    ceruns.path = "C:/Users/mspanu\Desktop/Anode_PCB_LD_master/Rawdata/" 
+    ceruns.path = "D:/BO_FEMBs/Rawdata/" 
     ceruns.wib_ips = [  "192.168.121.1"  ]
-    ceruns.wib_pwr_femb = [[1,0,0,0],]
+    ceruns.wib_pwr_femb = [[1,1,0,0],]
     ceruns.femb_mask    = [[0,0,0,0]]
     ceruns.bbwib_ips = [ "192.168.121.1"] 
     ceruns.tmp_wib_ips = ["192.168.121.1"] 
