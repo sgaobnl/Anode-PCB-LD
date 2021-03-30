@@ -1,4 +1,4 @@
 Void
-D:/BO_FEMBs/Rawdata/Rawdata_02_28_2021/run01rms/
-D:/BO_FEMBs/Rawdata/Rawdata_02_28_2021/run01fpg/
+D:/BO_FEMBs/Rawdata/Rawdata_03_02_2021/run02rms/
+D:/BO_FEMBs/Rawdata/Rawdata_03_02_2021/run02fpg/
 Void

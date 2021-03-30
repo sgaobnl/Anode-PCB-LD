@@ -398,10 +398,23 @@ class FEMB_UDP:
             print "FEMB_UDP--> Error record_hs_data: Invalid number of data packets requested"
             return None
 
+        femb_nos = len(fembs_np) #FEMBs must be installed on WIB following 0, 1, 2, 3 order
+        if femb_nos == 1: 
+            fembs_cs = 0x00000
+        elif femb_nos == 2: 
+            fembs_cs = 0x10000
+        elif femb_nos == 3: 
+            fembs_cs = 0x20000
+        elif femb_nos == 4: 
+            fembs_cs = 0x30000
+        else:
+            fembs_cs = 0x00000
         buf_size = self.reg_data_gen(reg=16,data=0x3F000000)
         nor_mode = self.reg_data_gen(reg=15,data=0)
-        acq_mode = self.reg_data_gen(reg=15,data=0x80000001)
-        triger_mode = self.reg_data_gen(reg=15,data=0x80000003)
+        #acq_mode = self.reg_data_gen(reg=15,data=0x80000001)# for 1 FEMB
+        #triger_mode = self.reg_data_gen(reg=15,data=0x80000003)# for 1 FEMB
+        acq_mode = self.reg_data_gen(reg=15,data=(0x80000001|fembs_cs))
+        triger_mode = self.reg_data_gen(reg=15,data=(0x80000003|fembs_cs))# for N FEMBs
  #       acq_mode = self.reg_data_gen(reg=15,data=1)
 
         #set up listening socket
@@ -428,26 +441,25 @@ class FEMB_UDP:
         self.write_reg_send(sock_write, triger_mode, wib=True) #
         self.write_reg_send(sock_write, acq_mode, wib=True) #
 
-        for femb in fembs_np:
-            rawdataPackets = [] 
-            tsp = str(int(time.time() * 100 ))
-            filename = path + "/" + step +"_FEMB" + str(femb)  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
-            for packet in range(0,1000,1):
-                data = None
-                timeout_flg = False
-                try:
-                    data = sock_data.recv(8192)
-                except socket.timeout:
-                    self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
-                    timeout_flg = True
-                if data != None :
-                    rawdataPackets.append(data)
-                if (timeout_flg):
-                    break
+        rawdataPackets = [] 
+        tsp = str(int(time.time() * 100 ))
+        filename = path + "/" + step +"_FEMB"  + "_" + format(fe_cfg_r,'02X') + "_" + tsp + ".bin"
+        for packet in range(0,1000,1):
+            data = None
+            timeout_flg = False
+            try:
+                data = sock_data.recv(8192)
+            except socket.timeout:
+                self.udp_hstimeout_cnt = self.udp_hstimeout_cnt  + 1
+                timeout_flg = True
+            if data != None :
+                rawdataPackets.append(data)
+            if (timeout_flg):
+                break
         
-            rawdata_str = ''.join(rawdataPackets)
-            with open(filename,"wb") as f:
-                f.write(rawdata_str) 
+        rawdata_str = ''.join(rawdataPackets)
+        with open(filename,"wb") as f:
+            f.write(rawdata_str) 
 
         self.write_reg_send(sock_write, nor_mode, wib=True) #
         time.sleep(0.1)
@@ -476,10 +488,24 @@ class FEMB_UDP:
             print "FEMB_UDP--> Error record_hs_data: Invalid number of data packets requested"
             return None
 
+        femb_nos = len(fembs_np) #FEMBs must be installed on WIB following 0, 1, 2, 3 order
+        if femb_nos == 1: 
+            fembs_cs = 0x00000
+        elif femb_nos == 2: 
+            fembs_cs = 0x10000
+        elif femb_nos == 3: 
+            fembs_cs = 0x20000
+        elif femb_nos == 4: 
+            fembs_cs = 0x30000
+        else:
+            fembs_cs = 0x00000
+
         buf_size = self.reg_data_gen(reg=16,data=0x3F000000)
         nor_mode = self.reg_data_gen(reg=15,data=0)
-        acq_mode = self.reg_data_gen(reg=15,data=0x80000001)
-        hw_trig_mode = self.reg_data_gen(reg=15,data=0x80000101)
+        #acq_mode = self.reg_data_gen(reg=15,data=(0x80000001|fembs_cs)) for one FEMB
+        #hw_trig_mode = self.reg_data_gen(reg=15,data=0x80000101) #for one FEMB
+        acq_mode = self.reg_data_gen(reg=15,data=(0x80000001|fembs_cs))
+        hw_trig_mode = self.reg_data_gen(reg=15,data=(0x80000101|fembs_cs)) #for N FEMBs
 
         #set up listening socket
         sock_data = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP

@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 7/15/2016 11:47:39 AM
-Last modified: 2/18/2021 11:18:21 PM
+Last modified: 3/30/2021 3:04:01 PM
 """
 
 #defaut setting for scientific caculation
@@ -90,7 +90,7 @@ def raw_convertor_conv(fp, femb_num = 1, jumbo_flag=True):
 
         addr = 0
         link_i = 0
-        links_data = [np.array([], dtype=int), np.array([], dtype=int), np.array([], dtype=int),np.array([], dtype=int)]
+        links_data = [np.array([], dtype=int), np.array([], dtype=int), np.array([], dtype=int),np.array([], dtype=int),np.array([], dtype=int),np.array([], dtype=int),np.array([], dtype=int),np.array([], dtype=int)]
         while (addr <= len(dataNtuple) -  25) and (link_i < femb_num*4):
             pkg_cnt0 = ((((dataNtuple[addr]) << 16 )+ (dataNtuple[addr+1])) ) & 0xFFFFFFFF
             pkg_res0 = ((((dataNtuple[addr+2]) << 16 )+ (dataNtuple[addr+3])) ) & 0xFFFFFFFF
@@ -108,7 +108,7 @@ def raw_convertor_conv(fp, femb_num = 1, jumbo_flag=True):
             else:
                 links_data[link_i] = np.append(links_data[link_i] , udp_pkg[8:])
 
-            if (b-a) < pkg_len-10:
+            if (b-a) < pkg_len-100:
                 print (b, a, b-a, pkg_len)
                 link_i +=1
 
@@ -124,7 +124,7 @@ def raw_convertor_conv(fp, femb_num = 1, jumbo_flag=True):
             #print (links_feed_pos[i])
             links_face_pos[i] = np.sort(np.append(links_face_pos[i], links_feed_pos[i]))
 
-        chipx2_data = [[],[],[],[]]
+        chipx2_data = [[],[],[],[], [], [], [], []]
         for i in range(len(links_face_pos)):
             chn_data = []
             for x in range(32):
@@ -136,7 +136,7 @@ def raw_convertor_conv(fp, femb_num = 1, jumbo_flag=True):
                 else:
                     print ("A sample data is not 25 words")
             chipx2_data[i] = chn_data
-        femb_data = chipx2_data[0] + chipx2_data[1] + chipx2_data[2] + chipx2_data[3] 
+        femb_data = chipx2_data[0] + chipx2_data[1] + chipx2_data[2] + chipx2_data[3]  + chipx2_data[4] + chipx2_data[5] + chipx2_data[6] + chipx2_data[7] 
     return femb_data
 
 #def raw_convertor_conv(fp, jumbo_flag=True):
@@ -192,8 +192,9 @@ import matplotlib.patches as mpatches
 import matplotlib.mlab as mlab
 
 def mk_plot(femb_data):
-    for j in range(8):
-        fig = plt.figure(figsize=(16,8))
+    #for j in range(8):
+    for j in range(16):
+        fig = plt.figure(figsize=(16,12))
         plt.rcParams.update({'font.size': 6})
         for i in range(16):
             chn = 16*j + i
@@ -202,8 +203,9 @@ def mk_plot(femb_data):
             y = np.array(femb_data[chn])%0x10000
 
             #ax.plot(x[0:150], y[0:150], marker = '.', label="CH%d"%chn)
-            ax.plot(x, y, marker = '.', label="CH%d"%chn)
-            ax.set_ylim((1000, 3500))
+            ax.plot(x, y, marker = '.', label="CH%d RMS=%d"%(chn, np.std(y)))
+            #ax.set_ylim((0000, 4100))
+            ax.set_xlim((0000, 50))
             ax.set_xlabel("Time / us")
             ax.set_ylabel("ADC counts / LSB")
             ax.legend(loc = 1)
@@ -219,7 +221,8 @@ def mk_plot(femb_data):
 #fp = "/Users/shanshangao/Downloads/WIB00step18_FEMB0_B8_158635190902.bin"
 #fp = "/Users/shanshangao/Documents/tmp/run11tri/WIB00step18_FEMB0_B8_158580569657.bin"
 #fp = "/Users/shanshangao/Documents/tmp/run10tri/WIB00step18_FEMB0_B9_158579563062.bin"
-fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run03tri/WIB00step18_FEMB0_B8_158691165651.bin"
-fp = "D:/BO_FEMBs/Rawdata/Rawdata_02_18_2021/run01tri/WIB00step18_FEMB0_B8_161367603585.bin"
-fembdata = raw_convertor_conv(fp)
+#fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run03tri/WIB00step18_FEMB0_B8_158691165651.bin"
+fp = "D:/BO_FEMBs/Rawdata/Rawdata_03_30_2021/run07tri/WIB00step18_FEMB0_B8_161712897884.bin"
+#fp = "D:/BO_FEMBs/Rawdata/Rawdata_03_30_2021/run04tri/WIB00step18_FEMB0_B8_161712753200.bin"
+fembdata = raw_convertor_conv(fp, femb_num=2)
 mk_plot(fembdata)

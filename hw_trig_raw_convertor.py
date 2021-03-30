@@ -5,7 +5,7 @@ Author: GSS
 Mail: gao.hillhill@gmail.com
 Description: 
 Created Time: 7/15/2016 11:47:39 AM
-Last modified: Wed 06 Jun 2018 06:55:46 AM CEST
+Last modified: 3/30/2021 3:19:03 PM
 """
 
 #defaut setting for scientific caculation
@@ -92,7 +92,7 @@ def raw_convertor_conv(fp, femb_num = 1, trigno = 0, jumbo_flag=True):
         trig_i = 0
         while (trig_i < trigno):
             link_i = 0
-            links_data = [np.array([], dtype=int), np.array([], dtype=int), np.array([], dtype=int),np.array([], dtype=int)]
+            links_data = [np.array([], dtype=int), np.array([], dtype=int), np.array([], dtype=int),np.array([], dtype=int), np.array([], dtype=int), np.array([], dtype=int), np.array([], dtype=int),np.array([], dtype=int)]
             except_cnt = 0
             while (addr <= len(dataNtuple) -  25) and (link_i < femb_num*4):
                 pkg_cnt0 = ((((dataNtuple[addr]) << 16 )+ (dataNtuple[addr+1])) ) & 0xFFFFFFFF
@@ -137,7 +137,7 @@ def raw_convertor_conv(fp, femb_num = 1, trigno = 0, jumbo_flag=True):
             #print (links_feed_pos[i])
             links_face_pos[i] = np.sort(np.append(links_face_pos[i], links_feed_pos[i]))
 
-        chipx2_data = [[],[],[],[]]
+        chipx2_data = [[],[],[],[], [],[],[],[]]
         for i in range(len(links_face_pos)):
             chn_data = []
             for x in range(32):
@@ -149,7 +149,7 @@ def raw_convertor_conv(fp, femb_num = 1, trigno = 0, jumbo_flag=True):
                 else:
                     print ("A sample data is not 25 words")
             chipx2_data[i] = chn_data
-        femb_data = chipx2_data[0] + chipx2_data[1] + chipx2_data[2] + chipx2_data[3] 
+        femb_data = chipx2_data[0] + chipx2_data[1] + chipx2_data[2] + chipx2_data[3] + chipx2_data[4] + chipx2_data[5] + chipx2_data[6] + chipx2_data[7] 
     return femb_data
 
 import matplotlib.pyplot as plt
@@ -158,8 +158,8 @@ import matplotlib.patches as mpatches
 import matplotlib.mlab as mlab
 
 def mk_plot(femb_data):
-    for j in range(8):
-        fig = plt.figure(figsize=(16,8))
+    for j in range(16):
+        fig = plt.figure(figsize=(16,12))
         plt.rcParams.update({'font.size': 6})
         for i in range(16):
             chn = 16*j + i
@@ -168,8 +168,8 @@ def mk_plot(femb_data):
             y = np.array(femb_data[chn])%0x10000
 
             #ax.plot(x[0:150], y[0:150], marker = '.', label="CH%d"%chn)
-            ax.plot(x, y, marker = '.', label="CH%d"%chn)
-            ax.set_ylim((1000, 3500))
+            ax.plot(x, y, marker = '.', label="CH%d, RMS=%d"%(chn, np.std(y)))
+            #ax.set_ylim((1000, 3500))
             ax.set_xlabel("Time / us")
             ax.set_ylabel("ADC counts / LSB")
             ax.legend(loc = 1)
@@ -192,6 +192,7 @@ fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run05tri/WIB00step18_FEMB_B8_
 #fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run06tri/WIB00step18_FEMB_B9_158690538904.bin"
 #fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run07tri/WIB00step18_FEMB_B9_158690553492.bin"
 #fp = "/Users/shanshangao/Documents/tmp/pcb04152020/run05tri/WIB00step18_FEMB_B8_158690433945.bin"
+fp = "D:/BO_FEMBs/Rawdata/Rawdata_03_30_2021/run09tri/WIB00step18_FEMB_B8_161713155047.bin"
 trigno = int(input("Please input a trigger event number starting from 1 >>"))
-fembdata = raw_convertor_conv(fp, trigno = trigno)
+fembdata = raw_convertor_conv(fp, femb_num=2, trigno = trigno)
 mk_plot(fembdata)
